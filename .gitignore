@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+*.swp
+mtan0125_zehu4485_ngra5777.zip
+report.pdf
+report/report.aux
+report/report.out
+report/report.pdf
