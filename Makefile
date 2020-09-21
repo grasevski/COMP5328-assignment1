@@ -15,7 +15,7 @@ code/data:
 
 data: resources/data.zip
 	unzip resources/data.zip
-	rm -r __MACOSX data/.DS_Store
+	rm -r __MACOSX
 
 clean:
 	rm -rf mtan0125_zehu4485_ngra5777.zip report.pdf report/report.aux report/report.log report/report.out report/report.pdf code/data data
