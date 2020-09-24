@@ -1,7 +1,7 @@
 zehu4485_ngra5777.zip: algorithm.py report/report.pdf
 	[ -d data ] || (unzip resources/data.zip && rm -r __MACOSX)
 	./$<
-	mkdir -p zehu4485_ngra5777/code/algorithm zehu4485_ngra5777/data
+	mkdir -p zehu4485_ngra5777/code/algorithm zehu4485_ngra5777/code/data
 	cp $< zehu4485_ngra5777/code/algorithm
 	cp $(word 2,$^) zehu4485_ngra5777
 	cd zehu4485_ngra5777 && zip -r ../$@ *
