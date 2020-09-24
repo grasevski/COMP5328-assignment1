@@ -1,19 +1,14 @@
-mtan0125_zehu4485_ngra5777.zip: report.pdf code code/algorithm code/algorithm/* code/data data
-	./code/algorithm/algorithm.py
-	zip -r $@ report.pdf code
-
-report.pdf: report/report.pdf
-	cp report/report.pdf .
+zehu4485_ngra5777.zip: algorithm.py report/report.pdf
+	[ -d data ] || (unzip resources/data.zip && rm -r __MACOSX)
+	./$<
+	mkdir -p zehu4485_ngra5777/code/algorithm zehu4485_ngra5777/data
+	cp $< zehu4485_ngra5777/code/algorithm
+	cp $(word 2,$^) zehu4485_ngra5777
+	cd zehu4485_ngra5777 && zip -r ../$@ *
+	rm -r zehu4485_ngra5777
 
 report/report.pdf: report/report.tex report/report.sty
 	cd report && pdflatex report.tex
 
-code/data:
-	mkdir -p $@
-
-data: resources/data.zip
-	unzip resources/data.zip
-	rm -r __MACOSX
-
 clean:
-	rm -rf mtan0125_zehu4485_ngra5777.zip report.pdf report/report.aux report/report.log report/report.out report/report.pdf code/data data
+	rm -rf zehu4485_ngra5777.zip report/report.aux report/report.log report/report.out report/report.pdf data
