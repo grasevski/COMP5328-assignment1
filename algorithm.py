@@ -9,6 +9,7 @@ from PIL import Image
 from sklearn.cluster import KMeans
 from sklearn.decomposition import NMF
 from sklearn.metrics import accuracy_score, normalized_mutual_info_score
+from sklearn.model_selection import train_test_split
 
 
 def load_data(root: str = 'data/CroppedYaleB',
@@ -172,6 +173,8 @@ def main():
         # Load dataset.
         print(f'==> Load {dataset} dataset ...')
         V_hat, Y_hat = load_data(f'data/{dataset}', red)
+        V_hat, _, Y_hat, _ = train_test_split(V_hat.T, Y_hat, train_size=0.9)
+        V_hat = V_hat.T
         print(f'V_hat.shape={V_hat.shape}, Y_hat.shape={Y_hat.shape}')
 
         for noise in no_noise, salt_and_pepper, uniform:
