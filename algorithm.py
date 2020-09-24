@@ -109,7 +109,20 @@ def ngra5777(Y_hat: np.ndarray,
              V: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Nicks NMF algorithm"""
     # TODO
-    return nmf(Y_hat, V)
+    K, N, M = len(set(Y_hat)), len(V), len(V[0])
+    rng = np.random.RandomState(1)
+    P, Q = rng.rand(N, K), rng.rand(M, K)
+    for step in range(200):
+        Pu = P * (V @ Q) / (P @ Q.T @ Q)
+        Qu = Q.T * (P.T @ V) / (P.T @ P @ Q.T)
+        Qu = Qu.T
+        e_P = np.sqrt(np.sum((Pu - P)**2, axis=(0, 1))) / P.size
+        e_Q = np.sqrt(np.sum((Qu - Q)**2, axis=(0, 1))) / Q.size
+        if e_P < 0.001 and e_Q < 0.001:
+            print("step is:", step)
+            break
+        P, Q = Pu, Qu
+    return P, Q.T
 
 
 def no_noise(V_hat: np.ndarray) -> np.ndarray:
@@ -138,23 +151,18 @@ def evaluate_algorithm(
                                                         np.ndarray]]
 ) -> None:
     """Fit model and run evaluation metrics"""
-    print(f'==> Apply {algorithm.__name__} NMF ...')
+    print(f'{algorithm.__name__}: ', end='', flush=True)
     W, H = algorithm(Y_hat, V)
-    print(f'W.shape={W.shape}, H.shape={H.shape}')
 
     # Evaluate relative reconstruction errors.
-    print(f'==> Evaluate RRE ...')
     RRE = np.linalg.norm(V_hat - W.dot(H)) / np.linalg.norm(V_hat)
-    print(f'RRE = {RRE}')
-
-    print('==> Evaluate Acc and NMI ...')
 
     # Assign cluster labels.
     Y_pred = assign_cluster_label(H.T, Y_hat)
 
     acc = accuracy_score(Y_hat, Y_pred)
     nmi = normalized_mutual_info_score(Y_hat, Y_pred)
-    print('Acc(NMI) = {:.4f} ({:.4f})'.format(acc, nmi))
+    print('RRE, Acc(NMI) = {:.4f}, {:.4f} ({:.4f})'.format(RRE, acc, nmi))
 
 
 def main():
