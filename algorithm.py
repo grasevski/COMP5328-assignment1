@@ -70,23 +70,15 @@ def assign_cluster_label(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     return Y_pred
 
 
-def plot(V: np.ndarray, V_hat: np.ndarray, V_noise: np.ndarray, red: int,
-         imgsize: Tuple[int, int]) -> None:
-    """Plot result."""
+def plot(red: int, imgsize: Tuple[int, int], *images: np.ndarray) -> None:
+    """Plot a list of images side by side"""
     img_size = [i // red for i in imgsize]
     ind = 2  # index of demo image
     plt.figure(figsize=(10, 3))
-    plt.subplot(131)
-    plt.imshow(V_hat[:, ind].reshape(img_size[1], img_size[0]),
-               cmap=plt.cm.gray)
-    plt.title('Image(Original)')
-    plt.subplot(132)
-    plt.imshow(V_noise[:, ind].reshape(img_size[1], img_size[0]),
-               cmap=plt.cm.gray)
-    plt.title('Noise')
-    plt.subplot(133)
-    plt.imshow(V[:, ind].reshape(img_size[1], img_size[0]), cmap=plt.cm.gray)
-    plt.title('Image(Noise)')
+    for i, x in enumerate(images, 1):
+        plt.subplot(1, len(images), i)
+        plt.imshow(x[:, ind].reshape(img_size[1], img_size[0]),
+                   cmap=plt.cm.gray)
     plt.show()
 
 
@@ -156,7 +148,7 @@ def evaluate_algorithm(
     W, H = algorithm(Y_hat, V)
 
     # Evaluate relative reconstruction errors.
-    RRE = np.linalg.norm(V_hat - W.dot(H)) / np.linalg.norm(V_hat)
+    RRE = np.linalg.norm(V_hat - W @ H) / np.linalg.norm(V_hat)
 
     # Assign cluster labels.
     Y_pred = assign_cluster_label(H.T, Y_hat)
