@@ -98,24 +98,24 @@ def zehu4485(Y_hat: np.ndarray,
     return nmf(Y_hat, V)
 
 
+def nmf_regularized(K: int,
+                    X: np.ndarray,
+                    l1: float = 0,
+                    l2: float = 0,
+                    steps: int = 200) -> Tuple[np.ndarray, np.ndarray]:
+    """NMF with l1 and l2 regularization using multiplicative update rule"""
+    rng = np.random.RandomState(1)
+    W, H = rng.rand(len(X), K), rng.rand(K, len(X[0]))
+    for _ in range(steps):
+        W *= (X @ H.T) / (W @ H @ H.T + l1 + l2 * W)
+        H *= (W.T @ X) / (W.T @ W @ H + l1 + l2 * H)
+    return W, H
+
+
 def ngra5777(Y_hat: np.ndarray,
              V: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Nicks NMF algorithm"""
-    # TODO
-    K, N, M = len(set(Y_hat)), len(V), len(V[0])
-    rng = np.random.RandomState(1)
-    P, Q = rng.rand(N, K), rng.rand(M, K)
-    for step in range(200):
-        Pu = P * (V @ Q) / (P @ Q.T @ Q)
-        Qu = Q.T * (P.T @ V) / (P.T @ P @ Q.T)
-        Qu = Qu.T
-        e_P = np.sqrt(np.sum((Pu - P)**2, axis=(0, 1))) / P.size
-        e_Q = np.sqrt(np.sum((Qu - Q)**2, axis=(0, 1))) / Q.size
-        if e_P < 0.001 and e_Q < 0.001:
-            print("step is:", step)
-            break
-        P, Q = Pu, Qu
-    return P, Q.T
+    return nmf_regularized(len(set(Y_hat)), V, 1, 1)
 
 
 def no_noise(V_hat: np.ndarray) -> np.ndarray:
