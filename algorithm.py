@@ -107,8 +107,8 @@ def nmf_regularized(K: int,
     rng = np.random.RandomState(1)
     W, H = rng.rand(len(X), K), rng.rand(K, len(X[0]))
     for _ in range(steps):
-        W *= (X @ H.T) / (W @ H @ H.T + l1 + l2 * W)
-        H *= (W.T @ X) / (W.T @ W @ H + l1 + l2 * H)
+        W *= X @ H.T / (W @ H @ H.T + l1 + l2 * W)
+        H *= W.T @ X / (W.T @ W @ H + l1 + l2 * H)
     return W, H
 
 
