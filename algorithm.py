@@ -112,10 +112,43 @@ def nmf_regularized(K: int,
     return W, H
 
 
+def tanhNMF(K: int, X: np.ndarray, p: float = 1, b: float = 1e-2, y: float = 1e-2, steps: int = 200) -> Tuple[np.ndarray, np.ndarray]:
+    """Robust NMF"""
+    rng = np.random.RandomState(1)
+    W, H = rng.rand(len(X), K), rng.rand(K, len(X[0]))
+    for _ in range(steps):
+        E = X - W @ H
+        a = X.size * p / (E ** 2).sum()
+        U = a * (1 - np.tanh(a * np.abs(E)) ** 2)
+        W *= U * X @ H.T / ((U * (W @ H)) @ H.T)
+        H *= W.T @ (U * X) / (W.T @ (U * (W @ H)))
+    return W, H
+
+
+#def tanhNMFplus(K: int, X: np.ndarray, p: float = 1, b: float = 1e-2, y: float = 1e-2, steps: int = 200) -> Tuple[np.ndarray, np.ndarray]:
+#    """Robust NMF"""
+#    rng = np.random.RandomState(1)
+#    W, H = rng.rand(len(X), K), rng.rand(K, len(X[0]))
+#    D = np.zeros(H.shape)
+#    for _ in range(steps):
+#        for i in range(len(D)):
+#            for j in range(len(D[0])):
+#                D[i][j] = np.exp(np.linalg.norm(X[i] - W[j]))
+#        E = X - W @ H
+#        a = X.size * p / (E ** 2)
+#        U = a * (1 - np.tanh(a * np.abs(E)) ** 2)
+#        t = sum(())
+#        HD2 = (H * D) ** 2
+#        W *= (U * (X @ H.T) + 2 * y * (X @ HD2)) / (U * (W @ H @ H.T) + 2 * y * (W @ (H * D)))
+#        H *= W.T @ (U * X) / (W.T @ (U * (W @ H)) + b * H + y * H * D * D)
+#    return W, H
+
+
 def ngra5777(Y_hat: np.ndarray,
              V: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Nicks NMF algorithm"""
-    return nmf_regularized(len(set(Y_hat)), V, 1, 1)
+    return tanhNMF(len(set(Y_hat)), V)
+    #return nmf_regularized(len(set(Y_hat)), V, 1, 1)
 
 
 def no_noise(V_hat: np.ndarray) -> np.ndarray:
