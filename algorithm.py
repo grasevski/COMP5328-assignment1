@@ -47,7 +47,7 @@ def load_data(root: str = 'data/CroppedYaleB',
             # TODO: preprocessing.
 
             # convert image to numpy array.
-            img = np.asarray(img).reshape((-1, 1))
+            img = np.asarray(img).reshape((-1, 1)) / 255
 
             # collect data and label.
             images.append(img)
@@ -151,7 +151,7 @@ def no_noise(V_hat: np.ndarray) -> np.ndarray:
 
 def salt_and_pepper(V_hat: np.ndarray) -> np.ndarray:
     """Randomly change some pixels to black or white"""
-    p, r, white = 0.4, 0.3, 255
+    p, r, white = 0.4, 0.3, 1
     p_noise = np.random.rand(*V_hat.shape) <= p
     r_noise = np.random.rand(*V_hat.shape) <= r
     salt = white * p_noise * r_noise
@@ -161,7 +161,7 @@ def salt_and_pepper(V_hat: np.ndarray) -> np.ndarray:
 
 def uniform(V_hat: np.ndarray) -> np.ndarray:
     """Add some uniformly distributed noise"""
-    return V_hat + 40 * np.random.rand(*V_hat.shape)
+    return V_hat + 0.4 * np.random.rand(*V_hat.shape)
 
 
 def evaluate_algorithm(
