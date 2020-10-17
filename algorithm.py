@@ -194,14 +194,13 @@ def evaluate_algorithm(
     return rre, acc, nmi
 
 
-def main():
-    """Run all algorithms"""
-    w = DictWriter(
-        sys.stdout,
-        ['dataset', 'noise', 'algorithm', 'trial', 'RRE', 'Acc', 'NMI'])
-    w.writeheader()
+def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
+    """Run all combinations of algorithms and data and record results"""
     Y_hats = [None] * 5
     V_hats, Vs = Y_hats.copy(), Y_hats.copy()
+    rre = np.zeros(len(Y_hats))
+    acc, nmi = rre.copy(), rre.copy()
+
     for dataset, red, imgsize in ('ORL', 3, (92, 112)), ('CroppedYaleB', 4,
                                                          (168, 192)):
         # Load dataset.
@@ -218,20 +217,41 @@ def main():
             Vs = [np.clip(v + noise(v.shape), 0, 1) for v in V_hats]
 
             for algorithm in nmf, nmf_beta, nmf_tanh:
-                for trial, (V, V_hat,
-                            Y_hat) in enumerate(zip(Vs, V_hats, Y_hats),
-                                                start=1):
-                    rre, acc, nmi = evaluate_algorithm(V, V_hat, Y_hat,
-                                                       algorithm)
+                row = {
+                    'dataset': dataset,
+                    'noise': noise.__name__,
+                    'algorithm': algorithm.__name__
+                }
+                for i, (V, V_hat, Y_hat) in enumerate(zip(Vs, V_hats, Y_hats)):
+                    rre[i], acc[i], nmi[i] = evaluate_algorithm(
+                        V, V_hat, Y_hat, algorithm)
                     w.writerow({
-                        'dataset': dataset,
-                        'noise': noise.__name__,
-                        'algorithm': algorithm.__name__,
-                        'trial': trial,
-                        'RRE': rre,
-                        'Acc': acc,
-                        'NMI': nmi
+                        **row,
+                        'trial': i + 1,
+                        'RRE': rre[i],
+                        'Acc': acc[i],
+                        'NMI': nmi[i],
                     })
+                w_summary.writerow({
+                    **row,
+                    'RRE': rre.mean(),
+                    'RRE_std': rre.std(),
+                    'Acc': acc.mean(),
+                    'Acc_std': acc.std(),
+                    'NMI': nmi.mean(),
+                    'NMI_std': nmi.std(),
+                })
+
+
+def main() -> None:
+    """Run all algorithms"""
+    header = ['dataset', 'noise', 'algorithm', 'RRE', 'Acc', 'NMI']
+    w = DictWriter(sys.stdout, header + ['trial'])
+    w.writeheader()
+    with open('summary.csv', 'w') as f:
+        w_summary = DictWriter(f, header + ['RRE_std', 'Acc_std', 'NMI_std'])
+        w_summary.writeheader()
+        run_nmf_algorithms(w, w_summary)
 
 
 if __name__ == '__main__':
