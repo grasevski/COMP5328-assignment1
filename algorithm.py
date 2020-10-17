@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Run NMF algorithms and calculate evaluation metrics"""
 from collections import Counter
+from csv import DictWriter
 import os
+import sys
 from typing import Callable, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
@@ -91,28 +93,30 @@ def nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 def nmf_beta(K: int,
              X: np.ndarray,
              beta: float = 2,
-             l1: float = 0,
+             l1: float = 1e-1,
              l2: float = 0,
              steps: int = 200,
              tol: float = 1e-4) -> Tuple[np.ndarray, np.ndarray]:
     """Algorithms for nonnegative matrix factorization with the B divergence"""
     rng, avg = np.random.RandomState(0), np.sqrt(X.mean() / K)
     W, H = avg * rng.rand(len(X), K), avg * rng.rand(K, len(X[0]))
-    error_at_init = rre(X, W, H)
-    previous_error = error_at_init
     for _ in range(steps):
-        W *= (X * ((W @ H)**(beta - 2))) @ H.T / ((
-            (W @ H)**(beta - 1)) @ H.T + l1 + l2 * W)
-        H *= W.T @ (X * ((W @ H)**(beta - 2))) / (W.T @ (
-            (W @ H)**(beta - 1)) + l1 + l2 * H)
-        error = rre(X, W, H)
-        if (previous_error - error) / error_at_init < tol:
+        WH = W @ H
+        dW = (X *
+              (WH**(beta - 2))) @ H.T / ((WH**(beta - 1)) @ H.T + l1 + l2 * W)
+        eW = np.linalg.norm(W * (1 - dW))
+        W *= dW
+        WH = W @ H
+        dH = W.T @ (X *
+                    (WH**(beta - 2))) / (W.T @ (WH**(beta - 1)) + l1 + l2 * H)
+        H *= dH
+        eH = np.linalg.norm(H * (1 - dH))
+        if eW < tol and eH < tol:
             break
-        previous_error = error
     return W, H
 
 
-def tanh_nmf(K: int,
+def nmf_tanh(K: int,
              X: np.ndarray,
              p: float = 1,
              b: float = 1e-2,
@@ -123,24 +127,24 @@ def tanh_nmf(K: int,
     rng, avg = np.random.RandomState(0), np.sqrt(X.mean() / K)
     W, H = avg * rng.rand(len(X), K), avg * rng.rand(K, len(X[0]))
     D = np.zeros(H.shape)
-    error_at_init = rre(X, W, H)
-    previous_error = error_at_init
     for _ in range(steps):
         if y:
             for i in range(len(D)):
                 for j in range(len(D[0])):
                     D[i][j] = np.exp(-np.linalg.norm(X.T[j] - W.T[i]))
         E = X - W @ H
-        a = X.size * p / (E**2).sum()
+        a = X.size * p / ((E**2).sum() + 1e-9)
         U = a * (1 - np.tanh(a * np.abs(E))**2)
         HD2 = (H * D)**2
-        W *= (U * X @ H.T + 2 * y * X @ HD2.T) / (
+        dW = (U * X @ H.T + 2 * y * X @ HD2.T) / (
             (U * (W @ H)) @ H.T + 2 * y * W * HD2.sum(axis=1))
-        H *= W.T @ (U * X) / (W.T @ (U * (W @ H)) + b * H + y * H * D * D)
-        error = rre(X, W, H)
-        if (previous_error - error) / error_at_init < tol:
+        eW = np.linalg.norm(W * (1 - dW))
+        W *= dW
+        dH = W.T @ (U * X) / (W.T @ (U * (W @ H)) + b * H + y * H * D * D)
+        eH = np.linalg.norm(H * (1 - dH))
+        H *= dH
+        if eW < tol and eH < tol:
             break
-        previous_error = error
     return W, H
 
 
@@ -173,47 +177,61 @@ def gaussian(shape: Tuple[int, int]) -> np.ndarray:
     return np.random.normal(0.5, 0.5)
 
 
-def rre(V: np.ndarray, W: np.ndarray, H: np.ndarray) -> float:
-    """Relative Reconstruction Error"""
-    return np.linalg.norm(V - W @ H) / np.linalg.norm(V)
-
-
 def evaluate_algorithm(
     V: np.ndarray, V_hat: np.ndarray, Y_hat: np.ndarray,
     algorithm: Callable[[np.ndarray, np.ndarray], Tuple[np.ndarray,
                                                         np.ndarray]]
-) -> None:
+) -> Tuple[float, float, float]:
     """Fit model and run evaluation metrics"""
-    print(f'{algorithm.__name__}: ', end='', flush=True)
     W, H = algorithm(len(set(Y_hat)), V)
 
     # Assign cluster labels.
     Y_pred = assign_cluster_label(H.T, Y_hat)
 
+    rre = np.linalg.norm(V - W @ H) / np.linalg.norm(V)
     acc = accuracy_score(Y_hat, Y_pred)
     nmi = normalized_mutual_info_score(Y_hat, Y_pred)
-    print('RRE, Acc(NMI) = {:.4f}, {:.4f} ({:.4f})'.format(
-        rre(V_hat, W, H), acc, nmi))
+    return rre, acc, nmi
 
 
 def main():
     """Run all algorithms"""
+    w = DictWriter(
+        sys.stdout,
+        ['dataset', 'noise', 'algorithm', 'trial', 'RRE', 'Acc', 'NMI'])
+    w.writeheader()
+    Y_hats = [None] * 5
+    V_hats, Vs = Y_hats.copy(), Y_hats.copy()
     for dataset, red, imgsize in ('ORL', 3, (92, 112)), ('CroppedYaleB', 4,
                                                          (168, 192)):
         # Load dataset.
-        print(f'==> Load {dataset} dataset ...')
-        V_hat, Y_hat = load_data(f'data/{dataset}', red)
-        V_hat, _, Y_hat, _ = train_test_split(V_hat.T, Y_hat, train_size=0.9)
-        V_hat = V_hat.T
-        print(f'V_hat.shape={V_hat.shape}, Y_hat.shape={Y_hat.shape}')
+        V_hat_orig, Y_hat_orig = load_data(f'data/{dataset}', red)
+        for i in range(len(Y_hats)):
+            V_hats[i], _, Y_hats[i], _ = train_test_split(V_hat_orig.T,
+                                                          Y_hat_orig,
+                                                          train_size=0.9,
+                                                          random_state=i)
+            V_hats[i] = V_hats[i].T
 
         for noise in no_noise, salt_and_pepper, uniform, laplace, gaussian:
             # Add Noise
-            print(f'==> Add {noise.__name__} noise ...')
-            V = np.clip(V_hat + noise(V_hat.shape), 0, 1)
+            Vs = [np.clip(v + noise(v.shape), 0, 1) for v in V_hats]
 
-            for algorithm in zehu4485, ngra5777:
-                evaluate_algorithm(V, V_hat, Y_hat, algorithm)
+            for algorithm in nmf, nmf_beta, nmf_tanh:
+                for trial, (V, V_hat,
+                            Y_hat) in enumerate(zip(Vs, V_hats, Y_hats),
+                                                start=1):
+                    rre, acc, nmi = evaluate_algorithm(V, V_hat, Y_hat,
+                                                       algorithm)
+                    w.writerow({
+                        'dataset': dataset,
+                        'noise': noise.__name__,
+                        'algorithm': algorithm.__name__,
+                        'trial': trial,
+                        'RRE': rre,
+                        'Acc': acc,
+                        'NMI': nmi
+                    })
 
 
 if __name__ == '__main__':
