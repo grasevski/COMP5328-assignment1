@@ -102,16 +102,16 @@ def nmf_beta(K: int,
     W, H = avg * rng.rand(len(X), K), avg * rng.rand(K, len(X[0]))
     for _ in range(steps):
         WH = W @ H
-        dW = (X *
-              (WH**(beta - 2))) @ H.T / ((WH**(beta - 1)) @ H.T + l1 + l2 * W)
-        eW = np.linalg.norm(W * (1 - dW))
-        W *= dW
+        d_W = (X *
+               (WH**(beta - 2))) @ H.T / ((WH**(beta - 1)) @ H.T + l1 + l2 * W)
+        e_W = np.linalg.norm(W * (1 - d_W))
+        W *= d_W
         WH = W @ H
-        dH = W.T @ (X *
-                    (WH**(beta - 2))) / (W.T @ (WH**(beta - 1)) + l1 + l2 * H)
-        H *= dH
-        eH = np.linalg.norm(H * (1 - dH))
-        if eW < tol and eH < tol:
+        d_H = W.T @ (X *
+                     (WH**(beta - 2))) / (W.T @ (WH**(beta - 1)) + l1 + l2 * H)
+        H *= d_H
+        e_H = np.linalg.norm(H * (1 - d_H))
+        if e_W < tol and e_H < tol:
             break
     return W, H
 
@@ -136,14 +136,14 @@ def nmf_tanh(K: int,
         a = X.size * p / ((E**2).sum() + 1e-9)
         U = a * (1 - np.tanh(a * np.abs(E))**2)
         HD2 = (H * D)**2
-        dW = (U * X @ H.T + 2 * y * X @ HD2.T) / (
+        d_W = (U * X @ H.T + 2 * y * X @ HD2.T) / (
             (U * (W @ H)) @ H.T + 2 * y * W * HD2.sum(axis=1))
-        eW = np.linalg.norm(W * (1 - dW))
-        W *= dW
-        dH = W.T @ (U * X) / (W.T @ (U * (W @ H)) + b * H + y * H * D * D)
-        eH = np.linalg.norm(H * (1 - dH))
-        H *= dH
-        if eW < tol and eH < tol:
+        e_W = np.linalg.norm(W * (1 - d_W))
+        W *= d_W
+        d_H = W.T @ (U * X) / (W.T @ (U * (W @ H)) + b * H + y * H * D * D)
+        e_H = np.linalg.norm(H * (1 - d_H))
+        H *= d_H
+        if e_W < tol and e_H < tol:
             break
     return W, H
 
