@@ -122,7 +122,8 @@ def nmf_beta(K: int,
 def nmf_tanh(K: int,
              X: np.ndarray,
              p: float = 1,
-             b: float = 1e-2,
+             l1: float = 1e-2,
+             l2: float = 1e-2,
              y: float = 0,
              steps: int = 200,
              tol: float = 1e-4) -> Tuple[np.ndarray, np.ndarray]:
@@ -136,14 +137,15 @@ def nmf_tanh(K: int,
                 for j in range(len(D[0])):
                     D[i][j] = np.exp(-np.linalg.norm(X.T[j] - W.T[i]))
         E = X - W @ H
-        a = X.size * p / ((E**2).sum() + 1e-9)
+        a = X.size * p / (E**2).sum()
         U = a * (1 - np.tanh(a * np.abs(E))**2)
         HD2 = (H * D)**2
         d_W = (U * X @ H.T + 2 * y * X @ HD2.T) / (
-            (U * (W @ H)) @ H.T + 2 * y * W * HD2.sum(axis=1))
+            (U * (W @ H)) @ H.T + 2 * y * W * HD2.sum(axis=1) + l1 + l2 * W)
         e_W = np.linalg.norm(W * (1 - d_W))
         W *= d_W
-        d_H = W.T @ (U * X) / (W.T @ (U * (W @ H)) + b * H + y * H * D * D)
+        d_H = W.T @ (U * X) / (W.T @ (U *
+                                      (W @ H)) + y * H * D * D + l1 + l2 * H)
         e_H = np.linalg.norm(H * (1 - d_H))
         H *= d_H
         if e_W < tol and e_H < tol:
@@ -249,11 +251,12 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
 def main() -> None:
     """Run all algorithms"""
     header = ['dataset', 'noise', 'algorithm', 'RRE', 'Acc', 'NMI']
-    w = DictWriter(sys.stdout, header + ['trial'])
-    w.writeheader()
-    with open('summary.csv', 'w') as f:
-        w_summary = DictWriter(f, header + ['RRE_std', 'Acc_std', 'NMI_std'])
-        w_summary.writeheader()
+    w_summary = DictWriter(sys.stdout,
+                           header + ['RRE_std', 'Acc_std', 'NMI_std'])
+    w_summary.writeheader()
+    with open('results.csv', 'w') as f:
+        w = DictWriter(f, header + ['trial'])
+        w.writeheader()
         run_nmf_algorithms(w, w_summary)
 
 
