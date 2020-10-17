@@ -3,16 +3,20 @@
 from collections import Counter
 from csv import DictWriter
 import os
+from pathlib import Path
 import sys
 from typing import Callable, Tuple
 import matplotlib.pyplot as plt
-from numba import jit
+from numba import njit
 import numpy as np
 from PIL import Image
 from sklearn.cluster import KMeans
 from sklearn.decomposition import NMF
 from sklearn.metrics import accuracy_score, normalized_mutual_info_score
 from sklearn.model_selection import train_test_split
+
+IMAGE_PATH = 'figures'
+SCALE = 255
 
 
 def load_data(root: str = 'data/CroppedYaleB',
@@ -48,7 +52,7 @@ def load_data(root: str = 'data/CroppedYaleB',
             img = img.resize([s // reduce for s in img.size])
 
             # convert image to numpy array.
-            img = np.asarray(img).reshape((-1, 1)) / 255
+            img = np.asarray(img).reshape((-1, 1)) / SCALE
 
             # collect data and label.
             images.append(img)
@@ -91,7 +95,7 @@ def nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     return W, H
 
 
-@jit(nopython=True, fastmath=True, parallel=True)
+@njit(fastmath=True, parallel=True)
 def nmf_beta(K: int,
              X: np.ndarray,
              beta: float = 2,
@@ -118,7 +122,7 @@ def nmf_beta(K: int,
     return W, H
 
 
-@jit(nopython=True, fastmath=True, parallel=True)
+@njit(fastmath=True, parallel=True)
 def nmf_tanh(K: int,
              X: np.ndarray,
              p: float = 1,
@@ -174,19 +178,19 @@ def uniform(shape: Tuple[int, int], scale: float = 0.4) -> np.ndarray:
 
 def laplace(shape: Tuple[int, int]) -> np.ndarray:
     """Laplace noise"""
-    return np.random.laplace(0.5, 0.5)
+    return np.random.laplace(0.5, 0.4)
 
 
 def gaussian(shape: Tuple[int, int]) -> np.ndarray:
     """Gaussian noise"""
-    return np.random.normal(0.5, 0.5)
+    return np.random.normal(0.5, 0.4)
 
 
 def evaluate_algorithm(
     V: np.ndarray, V_hat: np.ndarray, Y_hat: np.ndarray,
     algorithm: Callable[[np.ndarray, np.ndarray], Tuple[np.ndarray,
                                                         np.ndarray]]
-) -> Tuple[float, float, float]:
+) -> Tuple[float, float, float, np.ndarray, np.ndarray]:
     """Fit model and run evaluation metrics"""
     W, H = algorithm(len(set(Y_hat)), V)
 
@@ -196,7 +200,7 @@ def evaluate_algorithm(
     rre = np.linalg.norm(V - W @ H) / np.linalg.norm(V)
     acc = accuracy_score(Y_hat, Y_pred)
     nmi = normalized_mutual_info_score(Y_hat, Y_pred)
-    return rre, acc, nmi
+    return rre, acc, nmi, W, H
 
 
 def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
@@ -211,6 +215,8 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
                                                          (168, 192)):
         # Load dataset.
         V_hat_orig, Y_hat_orig = load_data(f'data/{dataset}', red)
+        img_size = [i // red for i in imgsize]
+
         for i in range(len(Y_hats)):
             V_hats[i], _, Y_hats[i], _ = train_test_split(V_hat_orig.T,
                                                           Y_hat_orig,
@@ -220,16 +226,37 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
         for noise in no_noise, salt_and_pepper, uniform, laplace, gaussian:
             # Add Noise
             Vs = [np.clip(v + noise(v.shape), 0, 1) for v in V_hats]
+            plt.figure(figsize=(10, 3))
+            plt.suptitle(f'{dataset} dataset with {noise.__name__} noise')
+            ind = 2  # index of demo image
+            NUM_ALGORITHMS = 4
 
-            for algorithm in nmf, nmf_beta, nmf_tanh:
+            for i, v in enumerate(Vs):
+                plt.subplot(len(Vs), NUM_ALGORITHMS, NUM_ALGORITHMS * i + 1)
+                plt.imshow(SCALE * v[:, ind].reshape(img_size[1], img_size[0]),
+                           cmap=plt.cm.gray)
+                plt.xticks(())
+                plt.yticks(())
+
+            for (a, algorithm) in enumerate((nmf, nmf_beta, nmf_tanh), 1):
                 row = {
                     'dataset': dataset,
                     'noise': noise.__name__,
                     'algorithm': algorithm.__name__
                 }
+
                 for i, (V, V_hat, Y_hat) in enumerate(zip(Vs, V_hats, Y_hats)):
-                    rre[i], acc[i], nmi[i] = evaluate_algorithm(
+                    rre[i], acc[i], nmi[i], W, H = evaluate_algorithm(
                         V, V_hat, Y_hat, algorithm)
+                    plt.subplot(len(Vs), NUM_ALGORITHMS,
+                                NUM_ALGORITHMS * i + a + 1)
+                    plt.imshow(
+                        SCALE *
+                        (W @ H)[:, ind].reshape(img_size[1], img_size[0]),
+                        cmap=plt.cm.gray)
+                    plt.xticks(())
+                    plt.yticks(())
+
                     w.writerow({
                         **row,
                         'trial': i + 1,
@@ -237,6 +264,7 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
                         'Acc': acc[i],
                         'NMI': nmi[i],
                     })
+
                 w_summary.writerow({
                     **row,
                     'RRE': rre.mean(),
@@ -247,10 +275,13 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
                     'NMI_std': nmi.std(),
                 })
 
+            plt.savefig(f'{IMAGE_PATH}/{dataset}_{noise.__name__}.png')
+
 
 def main() -> None:
     """Run all algorithms"""
     header = ['dataset', 'noise', 'algorithm', 'RRE', 'Acc', 'NMI']
+    Path(IMAGE_PATH).mkdir(parents=True, exist_ok=True)
     w_summary = DictWriter(sys.stdout,
                            header + ['RRE_std', 'Acc_std', 'NMI_std'])
     w_summary.writeheader()
