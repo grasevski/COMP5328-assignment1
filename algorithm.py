@@ -6,6 +6,7 @@ import os
 import sys
 from typing import Callable, Tuple
 import matplotlib.pyplot as plt
+from numba import jit
 import numpy as np
 from PIL import Image
 from sklearn.cluster import KMeans
@@ -62,7 +63,7 @@ def load_data(root: str = 'data/CroppedYaleB',
 
 def assign_cluster_label(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     """Label the data according to clustering, for evaluation"""
-    kmeans = KMeans(n_clusters=len(set(Y)), random_state=0).fit(X)
+    kmeans = KMeans(n_clusters=len(set(Y))).fit(X)
     Y_pred = np.zeros(Y.shape)
     for i in set(kmeans.labels_):
         ind = kmeans.labels_ == i
@@ -84,22 +85,23 @@ def plot(red: int, imgsize: Tuple[int, int], *images: np.ndarray) -> None:
 
 def nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Basic NMF algorithm, using sklearn library"""
-    model = NMF(n_components=K, random_state=0)
+    model = NMF(n_components=K)
     W = model.fit_transform(X)
     H = model.components_
     return W, H
 
 
+@jit(nopython=True, fastmath=True, parallel=True)
 def nmf_beta(K: int,
              X: np.ndarray,
              beta: float = 2,
-             l1: float = 1e-1,
+             l1: float = 1e-2,
              l2: float = 0,
              steps: int = 200,
              tol: float = 1e-4) -> Tuple[np.ndarray, np.ndarray]:
     """Algorithms for nonnegative matrix factorization with the B divergence"""
-    rng, avg = np.random.RandomState(0), np.sqrt(X.mean() / K)
-    W, H = avg * rng.rand(len(X), K), avg * rng.rand(K, len(X[0]))
+    avg = np.sqrt(X.mean() / K)
+    W, H = avg * np.random.rand(len(X), K), avg * np.random.rand(K, len(X[0]))
     for _ in range(steps):
         WH = W @ H
         d_W = (X *
@@ -116,6 +118,7 @@ def nmf_beta(K: int,
     return W, H
 
 
+@jit(nopython=True, fastmath=True, parallel=True)
 def nmf_tanh(K: int,
              X: np.ndarray,
              p: float = 1,
@@ -124,8 +127,8 @@ def nmf_tanh(K: int,
              steps: int = 200,
              tol: float = 1e-4) -> Tuple[np.ndarray, np.ndarray]:
     """Another Robust NMF"""
-    rng, avg = np.random.RandomState(0), np.sqrt(X.mean() / K)
-    W, H = avg * rng.rand(len(X), K), avg * rng.rand(K, len(X[0]))
+    avg = np.sqrt(X.mean() / K)
+    W, H = avg * np.random.rand(len(X), K), avg * np.random.rand(K, len(X[0]))
     D = np.zeros(H.shape)
     for _ in range(steps):
         if y:
@@ -200,6 +203,7 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
     V_hats, Vs = Y_hats.copy(), Y_hats.copy()
     rre = np.zeros(len(Y_hats))
     acc, nmi = rre.copy(), rre.copy()
+    np.random.seed(0)
 
     for dataset, red, imgsize in ('ORL', 3, (92, 112)), ('CroppedYaleB', 4,
                                                          (168, 192)):
@@ -208,8 +212,7 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
         for i in range(len(Y_hats)):
             V_hats[i], _, Y_hats[i], _ = train_test_split(V_hat_orig.T,
                                                           Y_hat_orig,
-                                                          train_size=0.9,
-                                                          random_state=i)
+                                                          train_size=0.9)
             V_hats[i] = V_hats[i].T
 
         for noise in no_noise, salt_and_pepper, uniform, laplace, gaussian:
