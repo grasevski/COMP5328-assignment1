@@ -108,6 +108,7 @@ def nmf(K: int,
         tol: float = 1e-4) -> Tuple[np.ndarray, np.ndarray]:
     """Generic NMF algorithm using multiplicative updates"""
     avg = np.sqrt(X.mean() / K)
+    np.random.seed(0)
     W, H = avg * np.random.rand(len(X), K), avg * np.random.rand(K, len(X[0]))
 
     for _ in range(steps):
