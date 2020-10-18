@@ -232,7 +232,7 @@ def evaluate_algorithm(
     # Assign cluster labels.
     Y_pred = assign_cluster_label(H.T, Y_hat)
 
-    rre = np.linalg.norm(V - W @ H) / np.linalg.norm(V)
+    rre = np.linalg.norm(V_hat - W @ H) / np.linalg.norm(V_hat)
     acc = accuracy_score(Y_hat, Y_pred)
     nmi = normalized_mutual_info_score(Y_hat, Y_pred)
     return rre, acc, nmi, W, H
