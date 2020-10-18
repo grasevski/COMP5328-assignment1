@@ -314,12 +314,12 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
 
                 w_summary.writerow({
                     **row,
-                    'RRE': rre.mean(),
-                    'RRE_std': rre.std(),
-                    'Acc': acc.mean(),
-                    'Acc_std': acc.std(),
-                    'NMI': nmi.mean(),
-                    'NMI_std': nmi.std(),
+                    'RRE': round(rre.mean(), 4),
+                    'RRE_std': round(rre.std(), 4),
+                    'Acc': round(acc.mean(), 4),
+                    'Acc_std': round(acc.std(), 4),
+                    'NMI': round(nmi.mean(), 4),
+                    'NMI_std': round(nmi.std(), 4),
                 })
 
             plt.savefig(f'{IMAGE_PATH}/{dataset}_{noise.__name__}.png')
