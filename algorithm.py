@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Run NMF algorithms and calculate evaluation metrics"""
+import argparse
 from collections import Counter
 from csv import DictWriter
 import os
 from pathlib import Path
 import sys
-from typing import Callable, Tuple
+from typing import Callable, List, TextIO, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -13,9 +14,6 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import NMF
 from sklearn.metrics import accuracy_score, normalized_mutual_info_score
 from sklearn.model_selection import train_test_split
-
-IMAGE_PATH = 'figures'
-SCALE = 255
 
 
 def load_data(root: str = 'data/CroppedYaleB',
@@ -87,6 +85,15 @@ def plot(red: int, imgsize: Tuple[int, int], *images: np.ndarray) -> None:
         plt.imshow(x[:, ind].reshape(img_size[1], img_size[0]),
                    cmap=plt.cm.gray)
     plt.show()
+
+
+def plot(V: np.ndarray, img_size: Tuple[int, int]) -> None:
+    """Face showing helper"""
+    ind = 2
+    plt.imshow(SCALE * V[:, ind].reshape(img_size[1], img_size[0]),
+               cmap=plt.cm.gray)
+    plt.xticks(())
+    plt.yticks(())
 
 
 def nmf_baseline(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -192,7 +199,7 @@ def kl_nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     return nmf(K, X, beta=1)
 
 
-def no_noise(shape: Tuple[int, int]) -> float:
+def no_noise(shape: Tuple[int, int], scale: float) -> float:
     """No noise"""
     return 0
 
@@ -211,23 +218,21 @@ def uniform(shape: Tuple[int, int], scale: float = 0.1) -> np.ndarray:
     return scale * (np.random.rand(*shape) - 0.5)
 
 
-def laplace(shape: Tuple[int, int]) -> np.ndarray:
+def laplace(shape: Tuple[int, int], scale: float = 0.1) -> np.ndarray:
     """Laplace noise"""
-    return np.random.laplace(0.5, 0.1)
+    return np.random.laplace(scale=scale)
 
 
-def gaussian(shape: Tuple[int, int]) -> np.ndarray:
+def gaussian(shape: Tuple[int, int], scale: float = 0.1) -> np.ndarray:
     """Gaussian noise"""
-    return np.random.normal(0.5, 0.1)
+    return np.random.normal(scale=scale)
 
 
 def evaluate_algorithm(
-    V: np.ndarray, V_hat: np.ndarray, Y_hat: np.ndarray,
-    algorithm: Callable[[np.ndarray, np.ndarray], Tuple[np.ndarray,
-                                                        np.ndarray]]
-) -> Tuple[float, float, float, np.ndarray, np.ndarray]:
+        V: np.ndarray, V_hat: np.ndarray, Y_hat: np.ndarray,
+        algorithm: str) -> Tuple[float, float, float, np.ndarray, np.ndarray]:
     """Fit model and run evaluation metrics"""
-    W, H = algorithm(len(set(Y_hat)), V)
+    W, H = ALGORITHMS[algorithm](len(set(Y_hat)), V)
 
     # Assign cluster labels.
     Y_pred = assign_cluster_label(H.T, Y_hat)
@@ -238,22 +243,28 @@ def evaluate_algorithm(
     return rre, acc, nmi, W, H
 
 
-def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
+def run_nmf_algorithms(output: TextIO, results: TextIO, algorithms: List[str],
+                       noises: List[str], trials: int, figures: str, data: str,
+                       datasets: List[str]) -> None:
     """Run all combinations of algorithms and data and record results"""
-    Y_hats = [None] * 5
+    header = [
+        'dataset', 'noise', 'noiselevel', 'algorithm', 'RRE', 'Acc', 'NMI'
+    ]
+    w_summary = DictWriter(output, header + ['RRE_std', 'Acc_std', 'NMI_std'])
+    w_summary.writeheader()
+    w = DictWriter(results, header + ['trial'])
+    w.writeheader()
+    Y_hats = [None] * trials
     V_hats, Vs = Y_hats.copy(), Y_hats.copy()
     rre = np.zeros(len(Y_hats))
     acc, nmi = rre.copy(), rre.copy()
     np.random.seed(0)
 
-    algorithms = [
-        nmf_baseline, nmf, kl_nmf, l1_nmf, l21_nmf, cim_nmf, tanh_nmf
-    ]
+    for dataset in datasets:
+        red, imgsize = DATASETS[dataset]
 
-    for dataset, red, imgsize in ('ORL', 3, (92, 112)), ('CroppedYaleB', 4,
-                                                         (168, 192)):
         # Load dataset.
-        V_hat_orig, Y_hat_orig = load_data(f'data/{dataset}', red)
+        V_hat_orig, Y_hat_orig = load_data(f'{data}/{dataset}', red)
         img_size = [i // red for i in imgsize]
 
         for i in range(len(Y_hats)):
@@ -262,47 +273,45 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
                                                           train_size=0.9)
             V_hats[i] = V_hats[i].T
 
-        for noise in no_noise, salt_and_pepper, uniform, laplace, gaussian:
-            # Add Noise
-            Vs = [np.clip(v + noise(v.shape), 0, 1) for v in V_hats]
-
-            plt.figure(figsize=(10, 3))
-            ind = 2  # index of demo image
-
+        for noise, noise_fn, k, p in ((noise, NOISES[noise][0], k, p)
+                                      for noise in noises
+                                      for k, p in enumerate(NOISES[noise][1])):
             row = {
                 'dataset': dataset,
-                'noise': noise.__name__.replace('_', '-'),
+                'noise': noise.replace('_', '-'),
+                'noiselevel': p,
             }
 
-            for i, v in enumerate(Vs):
-                plt.subplot(len(Vs),
-                            len(algorithms) + 1, (len(algorithms) + 1) * i + 1)
-                plt.imshow(SCALE * v[:, ind].reshape(img_size[1], img_size[0]),
-                           cmap=plt.cm.gray)
-                plt.xticks(())
-                plt.yticks(())
+            # Add Noise
+            Vs = [np.clip(v + noise_fn(v.shape, p), 0, 1) for v in V_hats]
 
-                if i == 0:
-                    plt.title('input')
+            if figures:
+                plt.figure(figsize=(10, 3))
+
+                for i, v in enumerate(Vs):
+                    plt.subplot(trials,
+                                len(algorithms) + 1,
+                                (len(algorithms) + 1) * i + 1)
+                    plot(v, img_size)
+
+                    if i == 0:
+                        plt.title('input')
 
             for a, algorithm in enumerate(algorithms, 1):
-                row['algorithm'] = algorithm.__name__.replace('_', '-')
+                row['algorithm'] = algorithm.replace('_', '-')
 
                 for i, (V, V_hat, Y_hat) in enumerate(zip(Vs, V_hats, Y_hats)):
                     rre[i], acc[i], nmi[i], W, H = evaluate_algorithm(
                         V, V_hat, Y_hat, algorithm)
-                    plt.subplot(len(Vs),
-                                len(algorithms) + 1,
-                                (len(algorithms) + 1) * i + a + 1)
-                    plt.imshow(
-                        SCALE *
-                        (W @ H)[:, ind].reshape(img_size[1], img_size[0]),
-                        cmap=plt.cm.gray)
-                    plt.xticks(())
-                    plt.yticks(())
 
-                    if i == 0:
-                        plt.title(row['algorithm'])
+                    if figures:
+                        plt.subplot(trials,
+                                    len(algorithms) + 1,
+                                    (len(algorithms) + 1) * i + a + 1)
+                        plot(W @ H, img_size)
+
+                        if i == 0:
+                            plt.title(row['algorithm'])
 
                     w.writerow({
                         **row,
@@ -322,22 +331,94 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
                     'NMI_std': '{:.4f}'.format(nmi.std()),
                 })
 
-            plt.savefig(f'{IMAGE_PATH}/{dataset}_{noise.__name__}.png')
+            if figures:
+                plt.savefig(f'{figures}/{dataset}_{noise}_{k}.png')
 
 
 def main() -> None:
     """Run all algorithms"""
-    header = ['dataset', 'noise', 'algorithm', 'RRE', 'Acc', 'NMI']
-    Path(IMAGE_PATH).mkdir(parents=True, exist_ok=True)
-    w_summary = DictWriter(sys.stdout,
-                           header + ['RRE_std', 'Acc_std', 'NMI_std'])
-    w_summary.writeheader()
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-r',
+                        '--results',
+                        default='results.csv',
+                        help='outcome of each trial')
+    parser.add_argument('-f',
+                        '--figures',
+                        default='figures',
+                        help='output image directory')
+    parser.add_argument('-k',
+                        '--trials',
+                        type=int,
+                        default=5,
+                        help='number of iterations per combination')
+    parser.add_argument('-o', '--output', help='redirect output to file')
+    parser.add_argument('-d',
+                        '--no-figures',
+                        dest='figures',
+                        action='store_false',
+                        help='disable image output')
+    parser.add_argument('-s',
+                        '--no-results',
+                        dest='results',
+                        action='store_false',
+                        help='disable results output')
+    parser.add_argument('-q',
+                        '--quiet',
+                        action='store_true',
+                        help='disable summary output')
+    parser.add_argument(
+        '-n',
+        '--noises',
+        default='no_noise,salt_and_pepper,uniform,laplace,gaussian',
+        help='which noise types to try')
+    parser.add_argument('-i',
+                        '--data',
+                        default='data',
+                        help='input data directory')
+    parser.add_argument('-t',
+                        '--datasets',
+                        default='ORL,CroppedYaleB',
+                        help='which datasets to try')
+    parser.add_argument('algorithms',
+                        nargs='*',
+                        default=[
+                            'nmf_baseline', 'nmf', 'kl_nmf', 'l1_nmf',
+                            'l21_nmf', 'cim_nmf', 'tanh_nmf'
+                        ],
+                        help='which algorithms to try')
+    args = parser.parse_args()
 
-    with open('results.csv', 'w') as f:
-        w = DictWriter(f, header + ['trial'])
-        w.writeheader()
-        run_nmf_algorithms(w, w_summary)
+    if args.figures:
+        Path(args.figures).mkdir(parents=True, exist_ok=True)
 
+    with open(args.output if args.output and not args.quiet else os.devnull,
+              'w') as o, open(args.results or os.devnull, 'w') as r:
+        run_nmf_algorithms(o if args.output or args.quiet else sys.stdout, r,
+                           args.algorithms, args.noises.split(','),
+                           args.trials, args.figures, args.data,
+                           args.datasets.split(','))
+
+
+SCALE = 255
+ALGORITHMS = {
+    'nmf_baseline': nmf_baseline,
+    'nmf': nmf,
+    'kl_nmf': kl_nmf,
+    'l1_nmf': l1_nmf,
+    'l21_nmf': l21_nmf,
+    'cim_nmf': cim_nmf,
+    'tanh_nmf': tanh_nmf
+}
+DATASETS = {'ORL': (3, (92, 112)), 'CroppedYaleB': (4, (168, 192))}
+NOISES = {
+    'no_noise': (no_noise, [0]),
+    'salt_and_pepper': (salt_and_pepper, [0.1, 0.2, 0.3, 0.4]),
+    'uniform': (uniform, [0.1, 0.2, 0.3, 0.4]),
+    'laplace': (laplace, [0.1, 0.2, 0.3, 0.4]),
+    'gaussian': (gaussian, [0.1, 0.2, 0.3, 0.4])
+}
 
 if __name__ == '__main__':
     main()
