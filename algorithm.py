@@ -68,9 +68,11 @@ def assign_cluster_label(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     """Label the data according to clustering, for evaluation"""
     kmeans = KMeans(n_clusters=len(set(Y))).fit(X)
     Y_pred = np.zeros(Y.shape)
+
     for i in set(kmeans.labels_):
         ind = kmeans.labels_ == i
         Y_pred[ind] = Counter(Y[ind]).most_common(1)[0][0]  # assign label.
+
     return Y_pred
 
 
@@ -79,6 +81,7 @@ def plot(red: int, imgsize: Tuple[int, int], *images: np.ndarray) -> None:
     img_size = [i // red for i in imgsize]
     ind = 2  # index of demo image
     plt.figure(figsize=(10, 3))
+
     for i, x in enumerate(images, 1):
         plt.subplot(1, len(images), i)
         plt.imshow(x[:, ind].reshape(img_size[1], img_size[0]),
@@ -106,10 +109,12 @@ def nmf(K: int,
     """Generic NMF algorithm using multiplicative updates"""
     avg = np.sqrt(X.mean() / K)
     W, H = avg * np.random.rand(len(X), K), avg * np.random.rand(K, len(X[0]))
+
     for _ in range(steps):
         W, H, done = mur(X, W, H, weight(X, W, H), beta, l1, l2, tol)
         if done:
             break
+
     return W, H
 
 
@@ -239,6 +244,7 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
     rre = np.zeros(len(Y_hats))
     acc, nmi = rre.copy(), rre.copy()
     np.random.seed(0)
+
     algorithms = [
         nmf_baseline, nmf, kl_nmf, l1_nmf, l21_nmf, cim_nmf, tanh_nmf
     ]
@@ -270,12 +276,13 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
             for i, v in enumerate(Vs):
                 plt.subplot(len(Vs),
                             len(algorithms) + 1, (len(algorithms) + 1) * i + 1)
-                if i == 0:
-                    plt.title('input')
                 plt.imshow(SCALE * v[:, ind].reshape(img_size[1], img_size[0]),
                            cmap=plt.cm.gray)
                 plt.xticks(())
                 plt.yticks(())
+
+                if i == 0:
+                    plt.title('input')
 
             for a, algorithm in enumerate(algorithms, 1):
                 row['algorithm'] = algorithm.__name__.replace('_', '-')
@@ -286,14 +293,15 @@ def run_nmf_algorithms(w: DictWriter, w_summary: DictWriter) -> None:
                     plt.subplot(len(Vs),
                                 len(algorithms) + 1,
                                 (len(algorithms) + 1) * i + a + 1)
-                    if i == 0:
-                        plt.title(row['algorithm'])
                     plt.imshow(
                         SCALE *
                         (W @ H)[:, ind].reshape(img_size[1], img_size[0]),
                         cmap=plt.cm.gray)
                     plt.xticks(())
                     plt.yticks(())
+
+                    if i == 0:
+                        plt.title(row['algorithm'])
 
                     w.writerow({
                         **row,
@@ -323,6 +331,7 @@ def main() -> None:
     w_summary = DictWriter(sys.stdout,
                            header + ['RRE_std', 'Acc_std', 'NMI_std'])
     w_summary.writeheader()
+
     with open('results.csv', 'w') as f:
         w = DictWriter(f, header + ['trial'])
         w.writeheader()
