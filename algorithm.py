@@ -105,7 +105,7 @@ def nmf(K: int,
         weight: Callable[[np.ndarray, np.ndarray, np.ndarray],
                          np.ndarray] = lambda x, w, h: 1,
         steps: int = 100,
-        tol: float = 1e-4) -> Tuple[np.ndarray, np.ndarray]:
+        tol: float = 1e-3) -> Tuple[np.ndarray, np.ndarray]:
     """Generic NMF algorithm using multiplicative updates"""
     avg = np.sqrt(X.mean() / K)
     np.random.seed(0)
