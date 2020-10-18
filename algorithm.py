@@ -7,7 +7,6 @@ from pathlib import Path
 import sys
 from typing import Callable, Tuple
 import matplotlib.pyplot as plt
-from numba import njit
 import numpy as np
 from PIL import Image
 from sklearn.cluster import KMeans
@@ -114,7 +113,6 @@ def nmf(K: int,
     return W, H
 
 
-@njit(fastmath=True, parallel=True)
 def mur(X: np.ndarray, W: np.ndarray, H: np.ndarray, U: np.ndarray,
         beta: float, l1: float, l2: float,
         tol: float) -> Tuple[np.ndarray, np.ndarray, bool]:
@@ -132,13 +130,11 @@ def mur(X: np.ndarray, W: np.ndarray, H: np.ndarray, U: np.ndarray,
     return W, H, e_W < tol and e_H < tol
 
 
-@njit(fastmath=True, parallel=True)
 def err(X: np.ndarray, W: np.ndarray, H: np.ndarray) -> np.ndarray:
     """Difference between the original and the reconstructed"""
     return X - W @ H
 
 
-@njit(fastmath=True, parallel=True)
 def tanh_weight(X: np.ndarray,
                 W: np.ndarray,
                 H: np.ndarray,
@@ -149,14 +145,12 @@ def tanh_weight(X: np.ndarray,
     return a * (1 - np.tanh(a * np.abs(E))**2)
 
 
-@njit(fastmath=True, parallel=True)
 def cim_weight(X: np.ndarray, W: np.ndarray, H: np.ndarray) -> np.ndarray:
     """Weight calculation for CIM NMF"""
     E2 = err(X, W, H)**2
     return np.exp(-E2 / E2.mean())
 
 
-@njit(fastmath=True)
 def l1_weight(X: np.ndarray, W: np.ndarray, H: np.ndarray) -> np.ndarray:
     """Weight calculation for l1 NMF"""
     return 1 / np.linalg.norm(err(X, W, H), ord=1)
