@@ -168,7 +168,7 @@ def l21_weight(X: np.ndarray, W: np.ndarray, H: np.ndarray) -> np.ndarray:
 
 def tanh_nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Another Robust NMF"""
-    return nmf(K, X, l2=1e-2, weight=tanh_weight)
+    return nmf(K, X, weight=tanh_weight)
 
 
 def cim_nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
