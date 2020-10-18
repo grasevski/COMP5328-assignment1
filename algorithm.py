@@ -74,31 +74,19 @@ def assign_cluster_label(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     return Y_pred
 
 
-def plot(red: int, imgsize: Tuple[int, int], *images: np.ndarray) -> None:
-    """Plot a list of images side by side"""
-    img_size = [i // red for i in imgsize]
-    ind = 2  # index of demo image
-    plt.figure(figsize=(10, 3))
-
-    for i, x in enumerate(images, 1):
-        plt.subplot(1, len(images), i)
-        plt.imshow(x[:, ind].reshape(img_size[1], img_size[0]),
-                   cmap=plt.cm.gray)
-    plt.show()
-
-
 def plot(V: np.ndarray, img_size: Tuple[int, int]) -> None:
     """Face showing helper"""
-    ind = 2
+    ind = 2  # index of demo image
     plt.imshow(SCALE * V[:, ind].reshape(img_size[1], img_size[0]),
                cmap=plt.cm.gray)
     plt.xticks(())
     plt.yticks(())
 
 
-def nmf_baseline(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def nmf_baseline(K: int, X: np.ndarray,
+                 steps: int) -> Tuple[np.ndarray, np.ndarray]:
     """Basic NMF algorithm, using sklearn library"""
-    model = NMF(n_components=K)
+    model = NMF(n_components=K, max_iter=steps)
     W = model.fit_transform(X)
     H = model.components_
     return W, H
@@ -106,12 +94,12 @@ def nmf_baseline(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
 def nmf(K: int,
         X: np.ndarray,
+        steps: int,
         beta: float = 2,
         l1: float = 0,
         l2: float = 0,
         weight: Callable[[np.ndarray, np.ndarray, np.ndarray],
                          np.ndarray] = lambda x, w, h: 1,
-        steps: int = 100,
         tol: float = 1e-3) -> Tuple[np.ndarray, np.ndarray]:
     """Generic NMF algorithm using multiplicative updates"""
     avg = np.sqrt(X.mean() / K)
@@ -174,29 +162,32 @@ def l21_weight(X: np.ndarray, W: np.ndarray, H: np.ndarray) -> np.ndarray:
     return 1 / np.linalg.norm(err(X, W, H), axis=0)
 
 
-def tanh_nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def tanh_nmf(K: int, X: np.ndarray,
+             steps: int) -> Tuple[np.ndarray, np.ndarray]:
     """Another Robust NMF"""
-    return nmf(K, X, weight=tanh_weight)
+    return nmf(K, X, steps, weight=tanh_weight)
 
 
-def cim_nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def cim_nmf(K: int, X: np.ndarray,
+            steps: int) -> Tuple[np.ndarray, np.ndarray]:
     """Robust NMF via half-quadratic minimization"""
-    return nmf(K, X, weight=cim_weight)
+    return nmf(K, X, steps, weight=cim_weight)
 
 
-def l21_nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def l21_nmf(K: int, X: np.ndarray,
+            steps: int) -> Tuple[np.ndarray, np.ndarray]:
     """Robust nonnegative matrix factorization using l21-norm"""
-    return nmf(K, X, weight=l21_weight)
+    return nmf(K, X, steps, weight=l21_weight)
 
 
-def l1_nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def l1_nmf(K: int, X: np.ndarray, steps: int) -> Tuple[np.ndarray, np.ndarray]:
     """“Non-negative Matrix Factorization for Images with Laplacian Noise"""
-    return nmf(K, X, weight=l1_weight)
+    return nmf(K, X, steps, weight=l1_weight)
 
 
-def kl_nmf(K: int, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def kl_nmf(K: int, X: np.ndarray, steps: int) -> Tuple[np.ndarray, np.ndarray]:
     """Algorithms for nonnegative matrix factorization with the β-divergence"""
-    return nmf(K, X, beta=1)
+    return nmf(K, X, steps, beta=1)
 
 
 def no_noise(shape: Tuple[int, int], scale: float) -> float:
@@ -229,10 +220,10 @@ def gaussian(shape: Tuple[int, int], scale: float = 0.1) -> np.ndarray:
 
 
 def evaluate_algorithm(
-        V: np.ndarray, V_hat: np.ndarray, Y_hat: np.ndarray,
-        algorithm: str) -> Tuple[float, float, float, np.ndarray, np.ndarray]:
+        V: np.ndarray, V_hat: np.ndarray, Y_hat: np.ndarray, algorithm: str,
+        steps: int) -> Tuple[float, float, float, np.ndarray, np.ndarray]:
     """Fit model and run evaluation metrics"""
-    W, H = ALGORITHMS[algorithm](len(set(Y_hat)), V)
+    W, H = ALGORITHMS[algorithm](len(set(Y_hat)), V, steps)
 
     # Assign cluster labels.
     Y_pred = assign_cluster_label(H.T, Y_hat)
@@ -245,7 +236,7 @@ def evaluate_algorithm(
 
 def run_nmf_algorithms(output: TextIO, results: TextIO, algorithms: List[str],
                        noises: List[str], trials: int, figures: str, data: str,
-                       datasets: List[str]) -> None:
+                       datasets: List[str], steps: int) -> None:
     """Run all combinations of algorithms and data and record results"""
     header = [
         'dataset', 'noise', 'noiselevel', 'algorithm', 'RRE', 'Acc', 'NMI'
@@ -258,9 +249,9 @@ def run_nmf_algorithms(output: TextIO, results: TextIO, algorithms: List[str],
     V_hats, Vs = Y_hats.copy(), Y_hats.copy()
     rre = np.zeros(len(Y_hats))
     acc, nmi = rre.copy(), rre.copy()
-    np.random.seed(0)
 
     for dataset in datasets:
+        np.random.seed(0)
         red, imgsize = DATASETS[dataset]
 
         # Load dataset.
@@ -283,7 +274,8 @@ def run_nmf_algorithms(output: TextIO, results: TextIO, algorithms: List[str],
             }
 
             # Add Noise
-            Vs = [np.clip(v + noise_fn(v.shape, p), 0, 1) for v in V_hats]
+            np.random.seed(0)
+            Vs = [np.clip(v + noise_fn(v.shape, p), 1e-7, 1) for v in V_hats]
 
             if figures:
                 plt.figure(figsize=(10, 3))
@@ -302,7 +294,7 @@ def run_nmf_algorithms(output: TextIO, results: TextIO, algorithms: List[str],
 
                 for i, (V, V_hat, Y_hat) in enumerate(zip(Vs, V_hats, Y_hats)):
                     rre[i], acc[i], nmi[i], W, H = evaluate_algorithm(
-                        V, V_hat, Y_hat, algorithm)
+                        V, V_hat, Y_hat, algorithm, steps)
 
                     if figures:
                         plt.subplot(trials,
@@ -332,7 +324,10 @@ def run_nmf_algorithms(output: TextIO, results: TextIO, algorithms: List[str],
                 })
 
             if figures:
-                plt.savefig(f'{figures}/{dataset}_{noise}_{k}.png')
+                plt.subplots_adjust(wspace=0, hspace=0)
+                plt.savefig(f'{figures}/{dataset}_{noise}_{k}.png',
+                            bbox_inches='tight',
+                            pad_inches=0)
 
 
 def main() -> None:
@@ -352,7 +347,12 @@ def main() -> None:
                         '--trials',
                         type=int,
                         default=5,
-                        help='number of iterations per combination')
+                        help='number of trials per combination')
+    parser.add_argument('-m',
+                        '--steps',
+                        type=int,
+                        default=100,
+                        help='number of multiplicative updates')
     parser.add_argument('-o', '--output', help='redirect output to file')
     parser.add_argument('-d',
                         '--no-figures',
@@ -398,7 +398,7 @@ def main() -> None:
         run_nmf_algorithms(o if args.output or args.quiet else sys.stdout, r,
                            args.algorithms, args.noises.split(','),
                            args.trials, args.figures, args.data,
-                           args.datasets.split(','))
+                           args.datasets.split(','), args.steps)
 
 
 SCALE = 255
