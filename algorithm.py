@@ -266,7 +266,7 @@ def graph(summary: TextIO, figures: str) -> None:
 
         plt.legend(d.keys())
         plt.tight_layout()
-        plt.savefig(f'{figures}/{dataset}_{noise}.png')
+        plt.savefig(f'{figures}/{dataset}-{noise}.png')
 
 
 def figure() -> None:
@@ -363,7 +363,7 @@ def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
 
             if figures:
                 plt.subplots_adjust(wspace=0, hspace=0)
-                plt.savefig(f'{figures}/{dataset}_{noise}_{k}.png',
+                plt.savefig(f'{figures}/{dataset}-{row["noise"]}-{k}.png',
                             bbox_inches='tight',
                             pad_inches=0)
 
