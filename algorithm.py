@@ -328,7 +328,7 @@ def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
                         plot(img, img_size)
 
                         if i == 0:
-                            plt.title(img)
+                            plt.title(title)
 
             for a, algorithm in enumerate(algorithms, 1):
                 row['algorithm'] = algorithm.replace('_', '-')
