@@ -2,10 +2,25 @@
 \usepackage{report,times}
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\graphicspath{{../figures/}}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
 
 \title{Assignment 1}
+\author{
+  John Hu (zehu4485, 500395897)\\
+  Implemented $L_{2,1}$-NMF\\
+  Wrote most of report
+  \and
+  Nicholas Grasevski (ngra5777, 500710654)\\
+  Implemented tanh-NMF, CIM-NMF\\
+  Wrote experiment part of report
+  \and
+  Tutor: Yu Yao
+}
 
 
 
@@ -20,17 +35,174 @@
 
 \maketitle
 
-Tutors: (list all your tutors)\\
-Group members: (list all your group members with name, ID, and Unikey)\\
-
 \begin{abstract}
-The abstract paragraph should be indented 1/2~inch (3~picas) on both left and
-right-hand margins. Use 10~point type, with a vertical spacing of 11~points.
-The word \textbf{Abstract} must be centered, bold, and in point size 12. Two
-line spaces precede the abstract. The abstract must be limited to one
-paragraph.
+In this report, we will explore the different NMF algorithms, including traditional NMF, $L_1$-NMF, $L_{2,1}$-NMF, KL-NMF, CIM-NMF, tanh-NMF and truncated Cauchy NMF. Through experimenting on ORL dataset and CroppedYaleB dataset with arbitrary induced Laplace and salt and pepper noises, we found KL-NMF yields the best results on a clean dataset, whilst tanh-NMF is the most robust out of all algorithms.
 \end{abstract}
 
+\section{Introduction}
+The Non-negative Matrix Factorization (NMF) is a powerful tool for analysing high dimensional data, e.g. images, movie ratings, stock market values. NMF can be said to be an approximation algorithm, where a higher dimensional matrix $V$ is approximated by two lower rank matrixes $W,H$ such that $V \approx WH$. Here the matrix $W$ can be also considered as the weight of matrix $H$, hence the individual component of $V$ is the weight sum of $H$, demonstrated as following:
+
+\begin{equation}
+V_i = \begin{bmatrix}
+w_{i,1} & w_{i,2} & \dots & w_{i,k-1} & w_{i,k}
+\end{bmatrix} \begin{bmatrix}
+h_1\\ 
+h_2\\ 
+\dots\\ 
+h_{k-1}\\ 
+h_k
+\end{bmatrix}
+\end{equation}
+
+In this report, comparison different types of NMF algorithm will be performed, including the basic NMF (i.e. with no sparse), $L_1$ and $L_2$ regularized, tanh NMF and truncated Cauchy NMF. All of the algorithms will be used on two image datasets, and the result in terms of efficiency and accuracy of the algorithms will be shown and discussed.
+
+\section{Related work}
+\subsection{Basic NMF and Multiplicative Update Rule (MUR)}
+The traditional or basic NMF has an objective function of $min_{W \leq 0, H \leq 0}\left \|V - WH\right \|_F^2$ \cite{source1}. It is obvious that the basic NMF's objective function is $L_2$-norm, it means the NMF assume the noise distribution to be a gaussian distribution. The multiplicative update rule uses the fact that the Euclidean distance $\left \|V - WH\right \|$ is non-increasing under the rule:
+
+\begin{equation}
+H_{kn} \leftarrow H_{kn} \frac{\left(W^T V\right)_{kn}}{\left(W^T WH\right)_{kn}}
+\end{equation}
+
+\begin{equation}
+W_{mk} \leftarrow W_{mk} \frac{\left(V H^T\right)_{mk}}{\left(WH H^T\right)_{mk}}
+\end{equation}
+
+Note that the Euclidean distance is invariant under these updates if and only if $W$ and $H$ are at a stationary point \cite{source2}. The simplicity and elegance of the multiplicative update rule made it a popular choice for computing NMFs, even extending its use to semi-nonnegative matrix factorization where $H$ is nonnegative, but $X$ can be both negative and nonnegative \cite{source3}.
+
+\subsection{L1 and L2 regularized NMF}
+The NMF uses a few important components of the data to construct an approximation, which means that a sparse representation is produced by NMF \cite{source4}. Evidently this is a very useful feature of the NMF algorithm as most data are sparse in transform domain, e.g. image in curvelet domain \cite{source5}, frequency in Fourier transformation \cite{source6}. The $L_1$ and $L_2$ regularized NMF tries to improve the basic NMF by implementing sparse coding. The $L_p$ norm can be shown as below:
+
+\begin{equation}
+\left \| a \right \|_p = \left ( \sum_{j=1}^{k} \left | a \right | ^p \right ) ^{\frac{1}{p}}
+\end{equation}
+
+Hence the objective function of $L_1$ and $L_2$ regularized NMF is calculated by adding the sparsity, in this case the $L_1$ and $L_2$ norm:
+
+\begin{equation}
+min_{W \leq 0, H \leq 0}\left \|V - WH\right \|_F^2 + \lambda\Psi\left(R\right)
+\end{equation}
+
+where $\Psi\left(R\right)$ is the sparsity constraint.
+
+However, $L_1$ and $L_2$ norm based NMF can be sensitive to outliers and sometimes unstable. The regularization could improve stability but cannot eliminate the impact of outliers.
+
+\section{Methods}
+\subsection{Algorithms and objective function}
+All the NMF algorithm used and its objective functions are shown in the table above. All algorithms use the multiplicative update rule to iteratively compute W and H. The following shows an abstract overview of each algorithm:
+
+Each algorithm is applied to both datasets and the evaluation metrics are recorded.
+
+\subsection{Introduced noises}
+Noises are introduced into the data, and algorithms are evaluated again on the noisy data. The result of noisy data will be compared vertically and horizontally. It will allow us to understand the robustness of the algorithm.
+
+\subsubsection{Laplace noise}
+Laplace noise refers to the noise in the statistical model used, as well as the noise during the processing of signals, for example, when taking a photo using a digital sensor, the sensor would have inherent noises due to its temperature, level of illumination and electrical wiring. Therefore, a perfect image with no noise is most impossible to obtain in practice, so when processing an image signal using NMF, we need to account for the noises. It is also worth to mention that noises are mostly random in nature. In this report we use the Laplacian distribution to model these noises:
+
+\begin{equation}
+p \left ( \epsilon | X,y,H,\sigma \right ) = \frac{1}{\sqrt{2}\sigma} \exp \left ( -\frac{\sqrt{2}\left | \epsilon  \right |}{\sigma} \right )
+\end{equation}
+
+The noise is simulated and added by drawing a random value from the Laplacian distribution and adding them to the data. Through adding the noise, it enables us to study and compare the robustness of each NMF algorithm.
+
+\subsubsection{Salt and pepper noise}
+Salt and pepper noise is common in images which have undergone an analog to digital conversion, shown in the below picture.
+
+Although modern techniques can effectively eliminate this noise, the salt and pepper noise is added to further examine the robustness of the algorithms.
+
+\section{Experiment}
+The experiment will evaluate the algorithms introduced in method on the ORL and CroppedYaleB datasets which will be explained in detail later. The algorithms will first be evaluated on the clean dataset to generate a baseline result. Laplace noise and salt and pepper noise will be introduced separately. For Laplace noise, the amount of noise introduced will be controled by standard deviation, in our experiment, we test $\forall \sigma \in  \left \{ 0.1,0.2,0.3,0.4 \right \}$. For salt and pepper noise, the amount of noise is controlled by the percentage of contaminated data, in our experiment, $\forall \sigma \in  \left \{ 0.1,0.2,0.3,0.4 \right \}$ will be used.
+
+\subsection{Dataset}
+The datasets used in this report are ORL, and CroppedYaleB. ORL is a facial image dataset, it contains 400 images with a size of $\left(112,92\right)$. CroppedYaleB is a dataset cropped from YaleB, YaleB is a very large dataset with 5760 images, done by 10 subjects posing 9 photos under 64 different light conditions. We apply the following preprocessing to the data:
+
+\begin{enumerate}
+\item The images are scaled down to reduce computation time
+\item The image data is scaled down from the range $\left [ 0,255 \right ]$ to $\left [ 0,1 \right ]$ (by dividing by 255), in order to ensure numerical stability and speed up the convergence
+\item After applying noise, the image data is clipped to the range $\left [ \left [ 10^{-7},1 \right ],1 \right ]$ to avoid division by zero in the multiplicative updates
+\end{enumerate}
+
+\subsection{Evaluation metrics}
+In order to perform a comprehensive comparison between the algorithms, several evaluation metrics are used: Relative Reconstruction Errors (RRE), Average Accuracy and Normalized Mutual Information (NMI).
+
+\subsubsection{Relative Reconstruction Errors}
+Relative Reconstruction Errors demonstrate how well the algorithm can regenerate the original data with or without added noise. It is calculated using the following formula:
+
+\begin{equation}
+\textup{RRE} = \frac{\left \| \hat{V} - WH \right \|_F}{\left \| \hat{V} \right \|_F}
+\end{equation}
+
+where $\hat{V}$ is the clean dataseet and $W,H$ are the factorization of $V$.
+
+\subsubsection{Average Accuracy}
+The average accuracy is done according to K-means clustering, with K set to the number of classes in the dataset (number of individuals), then based on the clustering the average accuracy can be calculated using the prediction $Y_{\textup{pred}}$ as follows:
+
+\begin{equation}
+\textup{Acc} \left ( Y, Y_{\textup{pred}} \right ) = \frac{1}{n} \sum_{i=1}^{n} 1 \left \{ Y_{\textup{pred}} \left ( i \right ) = Y \left ( i \right ) \right \}
+\end{equation}
+
+\subsubsection{Normalized Mutual Information}
+The normalized mutual information allows us to better understand the average accuracy, as it maximizes the effect of true prediction:
+
+\begin{equation}
+\textup{NMI} \left ( Y, Y_{\textup{pred}} \right ) = \frac{2I \left ( Y, Y_{\textup{pred}} \right )}{H \left ( Y \right ) + H \left ( Y_{\textup{pred}} \right )}
+\end{equation}
+
+where $I \left ( \cdot , \cdot \right )$ is mutual information and $H \left ( \cdot \right )$ is entropy.
+
+\subsection{Results}
+\begin{figure}
+\begin{subfigure}{\linewidth}
+\includegraphics[width=\linewidth]{ORL-salt_and_pepper-img.png}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+\includegraphics[width=\linewidth]{ORL-salt_and_pepper.png}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+\includegraphics[width=\linewidth]{CroppedYaleB-salt_and_pepper-img.png}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+\includegraphics[width=\linewidth]{CroppedYaleB-salt_and_pepper.png}
+\end{subfigure}
+\end{figure}
+
+\begin{figure}
+\begin{subfigure}{\linewidth}
+\includegraphics[width=\linewidth]{ORL-laplace.png}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+\includegraphics[width=\linewidth]{ORL-laplace-img.png}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+\includegraphics[width=\linewidth]{CroppedYaleB-laplace.png}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+\includegraphics[width=\linewidth]{CroppedYaleB-laplace-img.png}
+\end{subfigure}
+\end{figure}
+
+\subsection{Discussion}
+From the result we can clearly observe that NMF, KL-NMF, $L_1$-NMF, and $L_{2,1}$-NMF have similar performance, where the impact of noises on accuracy, NMI and RRE are very alike. These algorithms all capable of generating good results without noise, however, they are very sensitive to contaminated data, as the result show their accuracy decreases significantly when exposed to noise. Overall, based on the results, these algorithms are not as robust as the other algorithm, such as CIN-NMF or tanh-NMF, i.e. the robust algorithm are not sensitive to noise and performed relatively well even with noise introduced.
+
+However, there is a trade-off between robustness and accuracy. Although the robust algorithms are relatively insensitive to noises, a lower level of accuracy is shown in comparison to the other algorithms. 
+
+\section{Conclusion}
+In this report, we have compared several different NMF algorithms. The best performing algorithm, on a clean dataset is the KL-NMF, the most robust algorithm being tanh-NMF. Through comparison, there is an apparent trade-off between robustness and accuracy, the future research of NMF algorithm can focus on improving the accuracy while retain the robust property of the algorithm. 
+
+
+\begin{thebibliography}{9}
+\bibitem{source1} source1
+\bibitem{source2} source2
+\bibitem{source3} source3
+\bibitem{source4} source4
+\bibitem{source5} source5
+\bibitem{source6} source6
+\end{thebibliography}
+
+\appendix
+
+\section{Running the code}
+The experiment code is contained in \texttt{code/algorithm/algorithm.py}. It depends on the \texttt{matplotlib} and \texttt{scikit-learn} pip packages which must first be installed. To run the full experiment, run \texttt{code/algorithm/algorithm.py}. It will read the images from the \texttt{data} directory in the current directory and output summary results to stdout as well as writing detailed results to \texttt{results.csv} and images to a \texttt{figures} directory. These default settings and other settings such as number of trials, max iterations, which noise/algorithms to run, etc can be configured via command line arguments. Run \texttt{code/algorithm/algorithm.py -h} for more information. There is also a \texttt{-g} flag for reading the summary results from stdin and outputting the graphs found in the report to a \texttt{figures} directory.
 
 \section{General formatting instructions}
 \label{gen_inst}
