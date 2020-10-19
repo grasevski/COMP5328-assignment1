@@ -318,14 +318,17 @@ def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
             if figures:
                 figure()
 
-                for i, v in enumerate(Vs):
-                    plt.subplot(trials,
-                                len(algorithms) + 1,
-                                (len(algorithms) + 1) * i + 1)
-                    plot(v, img_size)
+                for i, (v, v_hat) in enumerate(zip(Vs, V_hats)):
+                    imgs = ((v_hat, 'original'), (v, 'with noise'))
 
-                    if i == 0:
-                        plt.title('input')
+                    for j, (img, title) in enumerate(imgs, 1):
+                        plt.subplot(trials,
+                                    len(algorithms) + 2,
+                                    (len(algorithms) + 2) * i + j)
+                        plot(img, img_size)
+
+                        if i == 0:
+                            plt.title(img)
 
             for a, algorithm in enumerate(algorithms, 1):
                 row['algorithm'] = algorithm.replace('_', '-')
@@ -336,8 +339,8 @@ def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
 
                     if figures:
                         plt.subplot(trials,
-                                    len(algorithms) + 1,
-                                    (len(algorithms) + 1) * i + a + 1)
+                                    len(algorithms) + 2,
+                                    (len(algorithms) + 2) * i + a + 2)
                         plot(W @ H, img_size)
 
                         if i == 0:
