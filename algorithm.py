@@ -2,10 +2,11 @@
 """Run NMF algorithms and calculate evaluation metrics"""
 import argparse
 from collections import Counter
-from csv import DictWriter
+from csv import DictReader, DictWriter
+from itertools import product
 import os
 from pathlib import Path
-import sys
+from sys import stdin, stdout
 from typing import Callable, List, TextIO, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
@@ -234,14 +235,51 @@ def evaluate_algorithm(
     return rre, acc, nmi, W, H
 
 
-def run_nmf_algorithms(output: TextIO, results: TextIO, algorithms: List[str],
+def graph(summary: TextIO, figures: str) -> None:
+    """Read summary results and output graphs"""
+    data = {}
+
+    for r in DictReader(summary):
+        k = (r['dataset'], r['noise'])
+
+        if k in data:
+            if r['algorithm'] in data[k]:
+                data[k][r['algorithm']].append(r)
+            else:
+                data[k][r['algorithm']] = [r]
+        else:
+            data[k] = {r['algorithm']: [r]}
+
+    for (dataset, noise), d in data.items():
+        figure()
+
+        for i, measure in enumerate(MEASURES, 1):
+            plt.subplot(1, len(MEASURES), i)
+
+            for algorithm, rows in d.items():
+                plt.errorbar([float(r['noiselevel']) for r in rows],
+                             [float(r[measure]) for r in rows],
+                             [float(r[f'{measure}_std']) for r in rows])
+
+            plt.xlabel('noise level')
+            plt.title(measure)
+
+        plt.legend(d.keys())
+        plt.tight_layout()
+        plt.savefig(f'{figures}/{dataset}_{noise}.png')
+
+
+def figure() -> None:
+    """Helper to create new figure"""
+    plt.figure(figsize=(10, 3))
+
+
+def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
                        noises: List[str], trials: int, figures: str, data: str,
                        datasets: List[str], steps: int) -> None:
     """Run all combinations of algorithms and data and record results"""
-    header = [
-        'dataset', 'noise', 'noiselevel', 'algorithm', 'RRE', 'Acc', 'NMI'
-    ]
-    w_summary = DictWriter(output, header + ['RRE_std', 'Acc_std', 'NMI_std'])
+    header = ['dataset', 'noise', 'noiselevel', 'algorithm'] + MEASURES
+    w_summary = DictWriter(summary, header + [f'{x}_std' for x in MEASURES])
     w_summary.writeheader()
     w = DictWriter(results, header + ['trial'])
     w.writeheader()
@@ -278,7 +316,7 @@ def run_nmf_algorithms(output: TextIO, results: TextIO, algorithms: List[str],
             Vs = [np.clip(v + noise_fn(v.shape, p), 1e-7, 1) for v in V_hats]
 
             if figures:
-                plt.figure(figsize=(10, 3))
+                figure()
 
                 for i, v in enumerate(Vs):
                     plt.subplot(trials,
@@ -339,7 +377,7 @@ def main() -> None:
                         '--results',
                         default='results.csv',
                         help='outcome of each trial')
-    parser.add_argument('-f',
+    parser.add_argument('-p',
                         '--figures',
                         default='figures',
                         help='output image directory')
@@ -353,7 +391,9 @@ def main() -> None:
                         type=int,
                         default=100,
                         help='number of multiplicative updates')
-    parser.add_argument('-o', '--output', help='redirect output to file')
+    parser.add_argument('-f',
+                        '--summary',
+                        help='summary file, or stdio if not specified')
     parser.add_argument('-d',
                         '--no-figures',
                         dest='figures',
@@ -381,6 +421,10 @@ def main() -> None:
                         '--datasets',
                         default='ORL,CroppedYaleB',
                         help='which datasets to try')
+    parser.add_argument('-g',
+                        '--graph',
+                        action='store_true',
+                        help='generate graphs from results')
     parser.add_argument('algorithms',
                         nargs='*',
                         default=[
@@ -393,9 +437,14 @@ def main() -> None:
     if args.figures:
         Path(args.figures).mkdir(parents=True, exist_ok=True)
 
-    with open(args.output if args.output and not args.quiet else os.devnull,
+    if args.graph:
+        with open(args.summary if args.summary else os.devnull) as f:
+            graph(f if args.summary else stdin, args.figures)
+        return
+
+    with open(args.summary if args.summary and not args.quiet else os.devnull,
               'w') as o, open(args.results or os.devnull, 'w') as r:
-        run_nmf_algorithms(o if args.output or args.quiet else sys.stdout, r,
+        run_nmf_algorithms(o if args.summary or args.quiet else stdout, r,
                            args.algorithms, args.noises.split(','),
                            args.trials, args.figures, args.data,
                            args.datasets.split(','), args.steps)
@@ -419,6 +468,7 @@ NOISES = {
     'laplace': (laplace, [0.1, 0.2, 0.3, 0.4]),
     'gaussian': (gaussian, [0.1, 0.2, 0.3, 0.4])
 }
+MEASURES = ['RRE', 'Acc', 'NMI']
 
 if __name__ == '__main__':
     main()
