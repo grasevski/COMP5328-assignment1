@@ -57,7 +57,7 @@ In this report, comparison different types of NMF algorithm will be performed, i
 
 \section{Related work}
 \subsection{Basic NMF and Multiplicative Update Rule (MUR)}
-The traditional or basic NMF has an objective function of $min_{W \leq 0, H \leq 0}\left \|V - WH\right \|_F^2$ \cite{source1}. It is obvious that the basic NMF's objective function is $L_2$-norm, it means the NMF assume the noise distribution to be a gaussian distribution. The multiplicative update rule uses the fact that the Euclidean distance $\left \|V - WH\right \|$ is non-increasing under the rule:
+The traditional or basic NMF has an objective function of $min_{W \leq 0, H \leq 0}\left\|V - WH\right\|_F^2$. \cite{source1} It is obvious that the basic NMF's objective function is $L_2$-norm, it means the NMF assume the noise distribution to be a gaussian distribution. The multiplicative update rule uses the fact that the Euclidean distance $\left\|V - WH\right\|$ is non-increasing under the rule:
 
 \begin{equation}
 H_{kn} \leftarrow H_{kn} \frac{\left(W^T V\right)_{kn}}{\left(W^T WH\right)_{kn}}
@@ -67,19 +67,19 @@ H_{kn} \leftarrow H_{kn} \frac{\left(W^T V\right)_{kn}}{\left(W^T WH\right)_{kn}
 W_{mk} \leftarrow W_{mk} \frac{\left(V H^T\right)_{mk}}{\left(WH H^T\right)_{mk}}
 \end{equation}
 
-Note that the Euclidean distance is invariant under these updates if and only if $W$ and $H$ are at a stationary point \cite{source2}. The simplicity and elegance of the multiplicative update rule made it a popular choice for computing NMFs, even extending its use to semi-nonnegative matrix factorization where $H$ is nonnegative, but $X$ can be both negative and nonnegative \cite{source3}.
+Note that the Euclidean distance is invariant under these updates if and only if $W$ and $H$ are at a stationary point. \cite{source2} The simplicity and elegance of the multiplicative update rule made it a popular choice for computing NMFs, even extending its use to semi-nonnegative matrix factorization where $H$ is nonnegative, but $X$ can be both negative and nonnegative. \cite{source3}
 
 \subsection{L1 and L2 regularized NMF}
-The NMF uses a few important components of the data to construct an approximation, which means that a sparse representation is produced by NMF \cite{source4}. Evidently this is a very useful feature of the NMF algorithm as most data are sparse in transform domain, e.g. image in curvelet domain \cite{source5}, frequency in Fourier transformation \cite{source6}. The $L_1$ and $L_2$ regularized NMF tries to improve the basic NMF by implementing sparse coding. The $L_p$ norm can be shown as below:
+The NMF uses a few important components of the data to construct an approximation, which means that a sparse representation is produced by NMF. \cite{source4} Evidently this is a very useful feature of the NMF algorithm as most data are sparse in transform domain, e.g. image in curvelet domain \cite{source5}, frequency in Fourier transformation. \cite{source6} The $L_1$ and $L_2$ regularized NMF tries to improve the basic NMF by implementing sparse coding. The $L_p$ norm can be shown as below:
 
 \begin{equation}
-\left \| a \right \|_p = \left ( \sum_{j=1}^{k} \left | a \right | ^p \right ) ^{\frac{1}{p}}
+\left\|a\right\|_p = \left(\sum_{j=1}^{k}\left|a\right|^p\right)^{\frac{1}{p}}
 \end{equation}
 
 Hence the objective function of $L_1$ and $L_2$ regularized NMF is calculated by adding the sparsity, in this case the $L_1$ and $L_2$ norm:
 
 \begin{equation}
-min_{W \leq 0, H \leq 0}\left \|V - WH\right \|_F^2 + \lambda\Psi\left(R\right)
+min_{W \leq 0, H \leq 0}\left\|V - WH\right\|_F^2 + \lambda\Psi\left(R\right)
 \end{equation}
 
 where $\Psi\left(R\right)$ is the sparsity constraint.
@@ -87,6 +87,14 @@ where $\Psi\left(R\right)$ is the sparsity constraint.
 However, $L_1$ and $L_2$ norm based NMF can be sensitive to outliers and sometimes unstable. The regularization could improve stability but cannot eliminate the impact of outliers.
 
 \section{Methods}
+\subsection{Pre-processing}
+We apply the following preprocessing to the images:
+\begin{enumerate}
+\item The image size is scaled down to reduce computation time
+\item The image data is scaled down from the range $\left[0,255\right]$ to $\left[0,1\right]$ (by dividing by 255), in order to ensure numerical stability and speed up the convergence
+\item After applying noise, the image data is clipped to the range $\left[10^{-7},1\right]$ to avoid division by zero in the multiplicative updates as well as ignoring impossible values (darker than pitch black, brighter than maximum brightness)
+\end{enumerate}
+
 \subsection{Algorithms and objective function}
 All the NMF algorithm used and its objective functions are shown in the table above. All algorithms use the multiplicative update rule to iteratively compute W and H. The following shows an abstract overview of each algorithm:
 
@@ -95,40 +103,92 @@ Each algorithm is applied to both datasets and the evaluation metrics are record
 \subsection{Introduced noises}
 Noises are introduced into the data, and algorithms are evaluated again on the noisy data. The result of noisy data will be compared vertically and horizontally. It will allow us to understand the robustness of the algorithm.
 
-\subsubsection{Laplace noise}
-Laplace noise refers to the noise in the statistical model used, as well as the noise during the processing of signals, for example, when taking a photo using a digital sensor, the sensor would have inherent noises due to its temperature, level of illumination and electrical wiring. Therefore, a perfect image with no noise is most impossible to obtain in practice, so when processing an image signal using NMF, we need to account for the noises. It is also worth to mention that noises are mostly random in nature. In this report we use the Laplacian distribution to model these noises:
+\subsubsection{Salt and pepper noise}
+\begin{figure}
+\includegraphics[width=\linewidth]{ORL-salt_and_pepper-3.png}
+\caption{ORL salt and pepper noise, $\sigma=0.4$ \label{fig:ORL-salt_and_pepper-3}}
+\end{figure}
+\begin{figure}
+\includegraphics[width=\linewidth]{CroppedYaleB-salt_and_pepper-3.png}
+\caption{CroppedYaleB salt and pepper noise, $\sigma=0.4$ \label{fig:CroppedYaleB-salt_and_pepper-3}}
+\end{figure}
+
+During an analog-to-digital conversion, an image may obtain some dark pixels in bright regions and bright pixels in dark regions. \cite{salt-and-pepper} Although modern techniques can effectively eliminate this noise, the salt and pepper noise was added to further examine the robustness of the algorithms. The noise was applied like so:
 
 \begin{equation}
-p \left ( \epsilon | X,y,H,\sigma \right ) = \frac{1}{\sqrt{2}\sigma} \exp \left ( -\frac{\sqrt{2}\left | \epsilon  \right |}{\sigma} \right )
+V = \hat{V} + 1\left\{P \land R\right\} - 1\left\{P \land \lnot R\right\}
 \end{equation}
 
-The noise is simulated and added by drawing a random value from the Laplacian distribution and adding them to the data. Through adding the noise, it enables us to study and compare the robustness of each NMF algorithm.
+where $V$ is the noisy image, $\hat{V}$ is the original image, $P \equiv z_1 \leq \sigma$, $R \equiv z_2 \leq r$, $z_1 \sim N\left(0,\sigma\right)$, $z_1 \sim N\left(0,r\right)$, $\sigma \in \left\{0.1,0.2,0.3,0.4\right\}$ is the noise level hyperparameter and $r \in \left\{0.3\right\} $ is the white-to-black ratio hyperparameter. Figures \ref{fig:ORL-salt_and_pepper-3} and \ref{fig:CroppedYaleB-salt_and_pepper-3} demonstrate how the various algorithms cope with this noise on the ORL and CroppedYaleB datasets respectively.
 
-\subsubsection{Salt and pepper noise}
-Salt and pepper noise is common in images which have undergone an analog to digital conversion, shown in the below picture.
+\subsubsection{Laplace noise}
+\begin{figure}
+\includegraphics[width=\linewidth]{ORL-laplace-3.png}
+\caption{ORL laplace noise, $\sigma=0.4$ \label{fig:ORL-laplace-3}}
+\end{figure}
+\begin{figure}
+\includegraphics[width=\linewidth]{CroppedYaleB-laplace-3.png}
+\caption{CroppedYaleB laplace noise, $\sigma=0.4$ \label{fig:CroppedYaleB-laplace-3}}
+\end{figure}
 
-Although modern techniques can effectively eliminate this noise, the salt and pepper noise is added to further examine the robustness of the algorithms.
+Laplace noise refers to the noise in the statistical model used, as well as the noise during the processing of signals, for example, when taking a photo using a digital sensor, the sensor would have inherent noises due to its temperature, level of illumination and electrical wiring. Therefore, a perfect image with no noise is most impossible to obtain in practice, so when processing an image signal using NMF, we need to account for the noises. It is also worth to mention that noises are mostly random in nature. In principle the $L_1$-NMF should handle this type of noise well because the $L_1$ norm assumes a Laplace distribution. The noise was applied like so:
+
+\begin{equation}
+V = \hat{V} + Z
+\end{equation}
+
+where $V$ is the noisy image, $\hat{V}$ is the original image, $Z \sim \textup{Laplace}\left(0,\sigma\right)$ and $\sigma \in \left\{0.1,0.2,0.3,0.4\right\}$ is the scale hyperparameter. Figures \ref{fig:ORL-laplace-3} and \ref{fig:CroppedYaleB-laplace-3} demonstrate how the various algorithms cope with this noise on the ORL and CroppedYaleB datasets respectively.
+
+\subsubsection{Uniform noise}
+\begin{figure}
+\includegraphics[width=\linewidth]{ORL-uniform-3.png}
+\caption{ORL uniform noise, $\sigma=0.4$ \label{fig:ORL-uniform-3}}
+\end{figure}
+\begin{figure}
+\includegraphics[width=\linewidth]{CroppedYaleB-uniform-3.png}
+\caption{CroppedYaleB uniform noise, $\sigma=0.4$ \label{fig:CroppedYaleB-uniform-3}}
+\end{figure}
+
+Being digital, the pixels of a given image can sometimes be quantized to a number of discrete levels, for example if the original image had a low resolution. This is known as quantization noise \cite{uniform} We approximate this effect by adding uniform noise to the original image. The noise was applied like so:
+
+\begin{equation}
+V = \hat{V} + Z
+\end{equation}
+
+where $V$ is the noisy image, $\hat{V}$ is the original image, $Z \sim U\left(-\sigma,\sigma\right)$ and $\sigma \in \left\{0.1,0.2,0.3,0.4\right\}$ is the noise level hyperparameter. Figures \ref{fig:ORL-uniform-3} and \ref{fig:CroppedYaleB-uniform-3} demonstrates how the various algorithms cope with this noise on the ORL and CroppedYaleB datasets respectively.
+
+\subsubsection{Gaussian noise}
+\begin{figure}
+\includegraphics[width=\linewidth]{ORL-gaussian-3.png}
+\caption{ORL gaussian noise, $\sigma=0.4$ \label{fig:ORL-gaussian-3}}
+\end{figure}
+\begin{figure}
+\includegraphics[width=\linewidth]{CroppedYaleB-gaussian-3.png}
+\caption{CroppedYaleB gaussian noise, $\sigma=0.4$ \label{fig:CroppedYaleB-gaussian-3}}
+\end{figure}
+
+Gaussian noise is noise with a normal distribution. It can arise in digital images due to sensor noise, poor illumination, high temperature or electronic circuit noise. \cite{gaussian} Frobenius norm already assumes gaussian noise, thus standard NMF is well equipped to handle this kind of corruption. Nevertheless it is included for comparison as it is a common type of noise in images. The noise was applied like so:
+
+\begin{equation}
+V = \hat{V} + Z
+\end{equation}
+
+where $V$ is the noisy image, $\hat{V}$ is the original image, $Z \sim N\left(0,\sigma^2\right)$ and $\sigma \in \left\{0.1,0.2,0.3,0.4\right\}$ is the standard deviation hyperparameter. Figures \ref{fig:ORL-gaussian-3} and \ref{fig:CroppedYaleB-gaussian-3} demonstrate how the various algorithms cope with this noise on the ORL and CroppedYaleB datasets respectively.
 
 \section{Experiment}
-The experiment will evaluate the algorithms introduced in method on the ORL and CroppedYaleB datasets which will be explained in detail later. The algorithms will first be evaluated on the clean dataset to generate a baseline result. Laplace noise and salt and pepper noise will be introduced separately. For Laplace noise, the amount of noise introduced will be controled by standard deviation, in our experiment, we test $\forall \sigma \in  \left \{ 0.1,0.2,0.3,0.4 \right \}$. For salt and pepper noise, the amount of noise is controlled by the percentage of contaminated data, in our experiment, $\forall \sigma \in  \left \{ 0.1,0.2,0.3,0.4 \right \}$ will be used.
+The experiment will evaluate the algorithms introduced in method on the ORL and CroppedYaleB datasets which will be explained in detail later. The algorithm will be evaluated in turn on each noise type listed above.
 
 \subsection{Dataset}
-The datasets used in this report are ORL, and CroppedYaleB. ORL is a facial image dataset, it contains 400 images with a size of $\left(112,92\right)$. CroppedYaleB is a dataset cropped from YaleB, YaleB is a very large dataset with 5760 images, done by 10 subjects posing 9 photos under 64 different light conditions. We apply the following preprocessing to the data:
-
-\begin{enumerate}
-\item The image size is scaled down to reduce computation time
-\item The image data is scaled down from the range $\left [ 0,255 \right ]$ to $\left [ 0,1 \right ]$ (by dividing by 255), in order to ensure numerical stability and speed up the convergence
-\item After applying noise, the image data is clipped to the range $\left [ 10^{-7},1 \right ]$ to avoid division by zero in the multiplicative updates
-\end{enumerate}
+The datasets used in this report are ORL, and CroppedYaleB. ORL is a facial image dataset, it contains 400 images with a size of $\left(112,92\right)$. CroppedYaleB is a dataset cropped from YaleB, YaleB is a very large dataset with 5760 images, done by 10 subjects posing 9 photos under 64 different light conditions.
 
 \subsection{Evaluation metrics}
-In order to perform a comprehensive comparison between the algorithms, several evaluation metrics are used: Relative Reconstruction Errors (RRE), Average Accuracy and Normalized Mutual Information (NMI).
+In order to perform a comprehensive comparison between the algorithms, several evaluation metrics are used: Relative Reconstruction Errors (RRE), Average Accuracy and Normalized Mutual Information (NMI). For the purposes of evaluation, we set the number of components to the number of classes (i.e. people) in the original datasets, so as to be able to meaningfully calculate the metrics described below.
 
 \subsubsection{Relative Reconstruction Errors}
 Relative Reconstruction Errors demonstrate how well the algorithm can regenerate the original data with or without added noise. It is calculated using the following formula:
 
 \begin{equation}
-\textup{RRE} = \frac{\left \| \hat{V} - WH \right \|_F}{\left \| \hat{V} \right \|_F}
+\textup{RRE} = \frac{\left\|\hat{V} - WH\right\|_F}{\left\|\hat{V}\right\|_F}
 \end{equation}
 
 where $\hat{V}$ is the clean dataseet and $W,H$ are the factorization of $V$.
@@ -137,30 +197,22 @@ where $\hat{V}$ is the clean dataseet and $W,H$ are the factorization of $V$.
 The average accuracy is done according to K-means clustering, with K set to the number of classes in the dataset (number of individuals), then based on the clustering the average accuracy can be calculated using the prediction $Y_{\textup{pred}}$ as follows:
 
 \begin{equation}
-\textup{Acc} \left ( Y, Y_{\textup{pred}} \right ) = \frac{1}{n} \sum_{i=1}^{n} 1 \left \{ Y_{\textup{pred}} \left ( i \right ) = Y \left ( i \right ) \right \}
+\textup{Acc}\left(Y,Y_{\textup{pred}}\right) = \frac{1}{n}\sum_{i=1}^{n}1\left\{Y_{\textup{pred}}\left(i\right) = Y\left(i\right)\right\}
 \end{equation}
 
 \subsubsection{Normalized Mutual Information}
 The normalized mutual information allows us to better understand the average accuracy, as it maximizes the effect of true prediction:
 
 \begin{equation}
-\textup{NMI} \left ( Y, Y_{\textup{pred}} \right ) = \frac{2I \left ( Y, Y_{\textup{pred}} \right )}{H \left ( Y \right ) + H \left ( Y_{\textup{pred}} \right )}
+\textup{NMI}\left(Y,Y_{\textup{pred}}\right) = \frac{2I\left(Y,Y_{\textup{pred}}\right)}{H\left(Y\right) + H\left(Y_{\textup{pred}}\right)}
 \end{equation}
 
-where $I \left ( \cdot , \cdot \right )$ is mutual information and $H \left ( \cdot \right )$ is entropy.
+where $I\left(\cdot,\cdot\right)$ is mutual information and $H\left(\cdot\right)$ is entropy.
 
 \subsection{Results}
 \begin{figure}
-\includegraphics[width=\linewidth]{ORL-salt_and_pepper-3.png}
-\caption{ORL salt and pepper noise, $\sigma=0.4$ \label{fig:ORL-salt_and_pepper-3}}
-\end{figure}
-\begin{figure}
 \includegraphics[width=\linewidth]{ORL-salt_and_pepper.png}
 \caption{ORL salt and pepper noise level vs evaluation metrics \label{fig:ORL-salt_and_pepper}}
-\end{figure}
-\begin{figure}
-\includegraphics[width=\linewidth]{CroppedYaleB-salt_and_pepper-3.png}
-\caption{CroppedYaleB salt and pepper noise, $\sigma=0.4$ \label{fig:CroppedYaleB-salt_and_pepper-3}}
 \end{figure}
 \begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-salt_and_pepper.png}
@@ -168,16 +220,8 @@ where $I \left ( \cdot , \cdot \right )$ is mutual information and $H \left ( \c
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=\linewidth]{ORL-laplace-3.png}
-\caption{ORL laplace noise, $\sigma=0.4$ \label{fig:ORL-laplace-3}}
-\end{figure}
-\begin{figure}
 \includegraphics[width=\linewidth]{ORL-laplace.png}
 \caption{ORL laplace noise standard deviation vs evaluation metrics \label{fig:ORL-laplace}}
-\end{figure}
-\begin{figure}
-\includegraphics[width=\linewidth]{CroppedYaleB-laplace-3.png}
-\caption{CroppedYaleB laplace noise, $\sigma=0.4$ \label{fig:CroppedYaleB-laplace-3}}
 \end{figure}
 \begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-laplace.png}
@@ -185,16 +229,8 @@ where $I \left ( \cdot , \cdot \right )$ is mutual information and $H \left ( \c
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=\linewidth]{ORL-uniform-3.png}
-\caption{ORL uniform noise, $\sigma=0.4$ \label{fig:ORL-uniform-3}}
-\end{figure}
-\begin{figure}
 \includegraphics[width=\linewidth]{ORL-uniform.png}
 \caption{ORL uniform noise level vs evaluation metrics \label{fig:ORL-uniform}}
-\end{figure}
-\begin{figure}
-\includegraphics[width=\linewidth]{CroppedYaleB-uniform-3.png}
-\caption{CroppedYaleB uniform noise, $\sigma=0.4$ \label{fig:CroppedYaleB-uniform-3}}
 \end{figure}
 \begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-uniform.png}
@@ -202,16 +238,8 @@ where $I \left ( \cdot , \cdot \right )$ is mutual information and $H \left ( \c
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=\linewidth]{ORL-gaussian-3.png}
-\caption{ORL gaussian noise, $\sigma=0.4$ \label{fig:ORL-gaussian-3}}
-\end{figure}
-\begin{figure}
 \includegraphics[width=\linewidth]{ORL-gaussian.png}
 \caption{ORL gaussian noise level vs evaluation metrics \label{fig:ORL-gaussian}}
-\end{figure}
-\begin{figure}
-\includegraphics[width=\linewidth]{CroppedYaleB-gaussian-3.png}
-\caption{CroppedYaleB gaussian noise, $\sigma=0.4$ \label{fig:CroppedYaleB-gaussian-3}}
 \end{figure}
 \begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-gaussian.png}
@@ -228,13 +256,16 @@ However, there is a trade-off between robustness and accuracy. Although the robu
 In this report, we have compared several different NMF algorithms. The best performing algorithm, on a clean dataset is the KL-NMF, the most robust algorithm being tanh-NMF. Through comparison, there is an apparent trade-off between robustness and accuracy, the future research of NMF algorithm can focus on improving the accuracy while retain the robust property of the algorithm.
 
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 \bibitem{source1} source1
 \bibitem{source2} source2
 \bibitem{source3} source3
 \bibitem{source4} source4
 \bibitem{source5} source5
 \bibitem{source6} source6
+\bibitem{uniform} Boncelet, Charles (2005). "Image Noise Models". In Alan C. Bovik (ed.). \textit{Handbook of Image and Video Processing}. Academic Press. ISBN 0-12-119792-1.
+\bibitem{gaussian} Philippe Cattin (2012-04-24). "Image Restoration: Introduction to Signal and Image Processing". MIAC, University of Basel. Retrieved 11 October 2013.
+\bibitem{salt-and-pepper} Alan C. Bovik (2005). \textit{Handbook of Image and Video Processing}. Academic Press. ISBN 0-12-119792-1.
 \end{thebibliography}
 
 \appendix
