@@ -346,6 +346,8 @@ def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
                             plt.title(title)
 
             for a, algorithm in enumerate(algorithms, 1):
+                row['algorithm'] = algorithm
+
                 for i, (V, V_hat, Y_hat) in enumerate(zip(Vs, V_hats, Y_hats)):
                     rre[i], acc[i], nmi[i], W, H = evaluate_algorithm(
                         V, V_hat, Y_hat, algorithm, steps)
