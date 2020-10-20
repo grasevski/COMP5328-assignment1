@@ -4,7 +4,6 @@
 \usepackage{url}
 \usepackage{amsmath}
 \usepackage{graphicx}
-\usepackage{subcaption}
 \graphicspath{{../figures/}}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
@@ -152,284 +151,72 @@ where $I \left ( \cdot , \cdot \right )$ is mutual information and $H \left ( \c
 
 \subsection{Results}
 \begin{figure}
-\begin{subfigure}{\linewidth}
 \includegraphics[width=\linewidth]{ORL-salt_and_pepper-3.png}
-\caption{ORL salt and pepper noise, $\sigma=0.4$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{ORL salt and pepper noise, $\sigma=0.4$ \label{fig:ORL-salt_and_pepper-3}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{ORL-salt_and_pepper.png}
-\caption{ORL salt and pepper noise level vs evaluation metrics}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{ORL salt and pepper noise level vs evaluation metrics \label{fig:ORL-salt_and_pepper}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-salt_and_pepper-3.png}
-\caption{CroppedYaleB salt and pepper noise, $\sigma=0.4$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{CroppedYaleB salt and pepper noise, $\sigma=0.4$ \label{fig:CroppedYaleB-salt_and_pepper-3}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-salt_and_pepper.png}
-\caption{CroppedYaleB salt and pepper noise level vs evaluation metrics}
-\end{subfigure}
-\caption{Salt and pepper noise}
+\caption{CroppedYaleB salt and pepper noise level vs evaluation metrics \label{fig:CroppedYaleB-salt_and_pepper}}
 \end{figure}
 
 \begin{figure}
-\begin{subfigure}{\linewidth}
 \includegraphics[width=\linewidth]{ORL-laplace-3.png}
-\caption{ORL laplace noise, $\sigma=0.4$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{ORL laplace noise, $\sigma=0.4$ \label{fig:ORL-laplace-3}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{ORL-laplace.png}
-\caption{ORL laplace noise standard deviation vs evaluation metrics}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{ORL laplace noise standard deviation vs evaluation metrics \label{fig:ORL-laplace}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-laplace-3.png}
-\caption{CroppedYaleB laplace noise, $\sigma=0.4$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{CroppedYaleB laplace noise, $\sigma=0.4$ \label{fig:CroppedYaleB-laplace-3}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-laplace.png}
-\caption{CroppedYaleB laplace noise standard deviation vs evaluation metrics}
-\end{subfigure}
-\caption{Laplace noise}
+\caption{CroppedYaleB laplace noise standard deviation vs evaluation metrics \label{fig:CroppedYaleB-laplace}}
 \end{figure}
 
 \begin{figure}
-\begin{subfigure}{\linewidth}
 \includegraphics[width=\linewidth]{ORL-uniform-3.png}
-\caption{ORL uniform noise, $\sigma=0.4$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{ORL uniform noise, $\sigma=0.4$ \label{fig:ORL-uniform-3}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{ORL-uniform.png}
-\caption{ORL uniform noise level vs evaluation metrics}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{ORL uniform noise level vs evaluation metrics \label{fig:ORL-uniform}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-uniform-3.png}
-\caption{CroppedYaleB uniform noise, $\sigma=0.4$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
+\caption{CroppedYaleB uniform noise, $\sigma=0.4$ \label{fig:CroppedYaleB-uniform-3}}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\linewidth]{CroppedYaleB-uniform.png}
-\caption{CroppedYaleB uniform noise level vs evaluation metrics}
-\end{subfigure}
-\caption{Uniform noise}
+\caption{CroppedYaleB uniform noise level vs evaluation metrics \label{fig:CroppedYaleB-uniform}}
 \end{figure}
 
 \begin{figure}
-\begin{subfigure}{\linewidth}
 \includegraphics[width=\linewidth]{ORL-gaussian-3.png}
-\caption{ORL gaussian noise, $\sigma=0.4$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
-\includegraphics[width=\linewidth]{ORL-gaussian.png}
-\caption{ORL gaussian noise level vs evaluation metrics}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
-\includegraphics[width=\linewidth]{CroppedYaleB-gaussian-3.png}
-\caption{CroppedYaleB gaussian noise, $\sigma=0.4$}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
-\includegraphics[width=\linewidth]{CroppedYaleB-gaussian.png}
-\caption{CroppedYaleB gaussian noise level vs evaluation metrics}
-\end{subfigure}
-\caption{Gaussian noise}
+\caption{ORL gaussian noise, $\sigma=0.4$ \label{fig:ORL-gaussian-3}}
 \end{figure}
-
-\begin{table}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 20.00 $\pm$ 0.06 & 19.96 $\pm$ 0.06 & 20.00 $\pm$ 0.06 & 20.00 $\pm$ 0.05 & 20.55 $\pm$ 0.12 & 47.34 $\pm$ 0.68 \\
-0.2 & 24.97 $\pm$ 0.07 & 25.25 $\pm$ 0.07 & 24.97 $\pm$ 0.07 & 24.97 $\pm$ 0.07 & 19.65 $\pm$ 0.15 & 60.45 $\pm$ 0.35 \\
-0.3 & 29.90 $\pm$ 0.12 & 30.48 $\pm$ 0.09 & 29.90 $\pm$ 0.12 & 29.91 $\pm$ 0.12 & 21.13 $\pm$ 0.20 & 67.82 $\pm$ 0.31 \\
-0.4 & 34.66 $\pm$ 0.15 & 35.58 $\pm$ 0.15 & 34.66 $\pm$ 0.15 & 34.67 $\pm$ 0.15 & 27.75 $\pm$ 0.24 & 74.98 $\pm$ 0.29 \\
-\end{tabular}\caption{RRE(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 61.00 $\pm$ 2.61 & 63.83 $\pm$ 3.30 & 61.00 $\pm$ 2.61 & 60.50 $\pm$ 2.12 & 60.89 $\pm$ 2.40 & 36.28 $\pm$ 2.45 \\
-0.2 & 43.78 $\pm$ 0.89 & 44.89 $\pm$ 1.16 & 43.78 $\pm$ 0.89 & 44.44 $\pm$ 3.16 & 62.56 $\pm$ 1.64 & 53.56 $\pm$ 1.23 \\
-0.3 & 30.94 $\pm$ 0.57 & 31.61 $\pm$ 1.00 & 30.94 $\pm$ 0.57 & 31.39 $\pm$ 0.96 & 61.56 $\pm$ 2.25 & 55.39 $\pm$ 3.56 \\
-0.4 & 24.11 $\pm$ 1.05 & 24.22 $\pm$ 0.71 & 24.11 $\pm$ 1.05 & 24.17 $\pm$ 0.72 & 49.89 $\pm$ 1.15 & 36.67 $\pm$ 1.35 \\
-\end{tabular}\caption{Acc(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 76.24 $\pm$ 1.76 & 78.30 $\pm$ 1.83 & 76.24 $\pm$ 1.76 & 75.99 $\pm$ 1.08 & 76.63 $\pm$ 0.90 & 55.22 $\pm$ 1.72 \\
-0.2 & 62.06 $\pm$ 1.25 & 63.04 $\pm$ 0.61 & 62.06 $\pm$ 1.25 & 62.79 $\pm$ 2.84 & 78.78 $\pm$ 0.90 & 71.18 $\pm$ 1.16 \\
-0.3 & 50.41 $\pm$ 0.68 & 51.44 $\pm$ 0.90 & 50.41 $\pm$ 0.68 & 51.01 $\pm$ 1.43 & 77.05 $\pm$ 1.28 & 73.27 $\pm$ 1.70 \\
-0.4 & 42.95 $\pm$ 1.19 & 43.37 $\pm$ 1.40 & 42.95 $\pm$ 1.19 & 42.55 $\pm$ 0.56 & 68.93 $\pm$ 0.81 & 56.93 $\pm$ 1.43 \\
-\end{tabular}\caption{NMI(\%)}\end{subtable}
-\caption{ORL dataset with salt and pepper noise (mean $\pm$ std)}
-\end{table}
-
-\begin{table}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 23.54 $\pm$ 0.10 & 23.71 $\pm$ 0.08 & 23.54 $\pm$ 0.10 & 23.61 $\pm$ 0.09 & 28.29 $\pm$ 0.27 & 62.47 $\pm$ 0.33 \\
-0.2 & 27.59 $\pm$ 0.10 & 28.19 $\pm$ 0.08 & 27.59 $\pm$ 0.10 & 27.63 $\pm$ 0.12 & 28.34 $\pm$ 0.28 & 69.56 $\pm$ 0.21 \\
-0.3 & 32.73 $\pm$ 0.09 & 33.38 $\pm$ 0.10 & 32.73 $\pm$ 0.09 & 32.76 $\pm$ 0.09 & 31.08 $\pm$ 0.26 & 76.19 $\pm$ 0.15 \\
-0.4 & 38.36 $\pm$ 0.06 & 38.82 $\pm$ 0.09 & 38.36 $\pm$ 0.06 & 38.39 $\pm$ 0.07 & 37.59 $\pm$ 0.32 & 82.00 $\pm$ 0.14 \\
-\end{tabular}\caption{RRE(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 17.18 $\pm$ 0.87 & 18.29 $\pm$ 0.95 & 17.18 $\pm$ 0.87 & 17.76 $\pm$ 1.02 & 11.69 $\pm$ 0.31 & 8.36 $\pm$ 0.32 \\
-0.2 & 15.56 $\pm$ 0.72 & 14.70 $\pm$ 0.76 & 15.56 $\pm$ 0.72 & 15.53 $\pm$ 0.55 & 13.33 $\pm$ 0.56 & 9.24 $\pm$ 0.23 \\
-0.3 & 13.30 $\pm$ 0.58 & 12.41 $\pm$ 0.52 & 13.30 $\pm$ 0.58 & 12.93 $\pm$ 0.56 & 14.37 $\pm$ 0.22 & 10.26 $\pm$ 0.21 \\
-0.4 & 11.18 $\pm$ 0.17 & 10.34 $\pm$ 0.65 & 11.18 $\pm$ 0.17 & 10.53 $\pm$ 0.28 & 12.81 $\pm$ 0.71 & 10.03 $\pm$ 0.20 \\
-\end{tabular}\caption{Acc(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 23.42 $\pm$ 0.87 & 24.70 $\pm$ 0.82 & 23.42 $\pm$ 0.87 & 23.69 $\pm$ 1.17 & 13.47 $\pm$ 1.04 & 9.06 $\pm$ 0.42 \\
-0.2 & 20.68 $\pm$ 0.47 & 20.17 $\pm$ 1.10 & 20.68 $\pm$ 0.47 & 20.86 $\pm$ 0.58 & 15.53 $\pm$ 0.92 & 10.84 $\pm$ 0.60 \\
-0.3 & 16.01 $\pm$ 0.74 & 15.55 $\pm$ 1.05 & 16.01 $\pm$ 0.74 & 16.01 $\pm$ 1.29 & 17.31 $\pm$ 0.30 & 11.95 $\pm$ 0.55 \\
-0.4 & 12.52 $\pm$ 0.44 & 11.82 $\pm$ 1.22 & 12.52 $\pm$ 0.44 & 11.72 $\pm$ 0.23 & 15.86 $\pm$ 0.74 & 11.65 $\pm$ 0.73 \\
-\end{tabular}\caption{NMI(\%)}\end{subtable}
-\caption{CroppedYaleB dataset with salt and pepper noise (mean $\pm$ std)}
-\end{table}
-
-\begin{table}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 17.10 $\pm$ 1.60 & 16.74 $\pm$ 1.55 & 17.10 $\pm$ 1.60 & 17.19 $\pm$ 1.58 & 25.93 $\pm$ 1.31 & 37.95 $\pm$ 2.04 \\
-0.2 & 19.64 $\pm$ 4.73 & 19.30 $\pm$ 4.70 & 19.64 $\pm$ 4.73 & 19.73 $\pm$ 4.71 & 27.88 $\pm$ 3.83 & 37.58 $\pm$ 3.03 \\
-0.3 & 22.87 $\pm$ 8.33 & 22.56 $\pm$ 8.33 & 22.87 $\pm$ 8.33 & 22.95 $\pm$ 8.31 & 30.49 $\pm$ 7.00 & 38.32 $\pm$ 3.81 \\
-0.4 & 26.50 $\pm$ 12.03 & 26.22 $\pm$ 12.04 & 26.50 $\pm$ 12.03 & 26.57 $\pm$ 12.01 & 33.55 $\pm$ 10.47 & 39.90 $\pm$ 5.72 \\
-\end{tabular}\caption{RRE(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 70.61 $\pm$ 1.85 & 73.00 $\pm$ 0.90 & 70.61 $\pm$ 1.85 & 71.11 $\pm$ 0.84 & 50.11 $\pm$ 3.09 & 23.56 $\pm$ 1.44 \\
-0.2 & 69.61 $\pm$ 3.09 & 72.72 $\pm$ 1.98 & 69.61 $\pm$ 3.09 & 70.78 $\pm$ 1.74 & 47.17 $\pm$ 3.87 & 23.67 $\pm$ 2.04 \\
-0.3 & 70.22 $\pm$ 3.42 & 73.06 $\pm$ 1.89 & 70.22 $\pm$ 3.42 & 69.72 $\pm$ 1.46 & 47.67 $\pm$ 5.00 & 23.06 $\pm$ 2.24 \\
-0.4 & 67.94 $\pm$ 2.37 & 72.39 $\pm$ 2.62 & 67.94 $\pm$ 2.37 & 70.67 $\pm$ 2.08 & 47.39 $\pm$ 7.43 & 23.22 $\pm$ 3.95 \\
-\end{tabular}\caption{Acc(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 83.96 $\pm$ 1.12 & 84.96 $\pm$ 0.62 & 83.96 $\pm$ 1.12 & 84.08 $\pm$ 0.54 & 68.29 $\pm$ 2.32 & 43.43 $\pm$ 1.55 \\
-0.2 & 83.71 $\pm$ 1.63 & 85.44 $\pm$ 1.48 & 83.71 $\pm$ 1.63 & 83.95 $\pm$ 0.78 & 66.22 $\pm$ 3.59 & 42.39 $\pm$ 2.72 \\
-0.3 & 83.63 $\pm$ 2.11 & 84.59 $\pm$ 1.09 & 83.63 $\pm$ 2.11 & 83.92 $\pm$ 0.48 & 66.34 $\pm$ 5.31 & 42.38 $\pm$ 2.90 \\
-0.4 & 82.18 $\pm$ 1.40 & 84.86 $\pm$ 1.70 & 82.18 $\pm$ 1.40 & 83.18 $\pm$ 1.55 & 65.71 $\pm$ 6.43 & 41.80 $\pm$ 4.17 \\
-\end{tabular}\caption{NMI(\%)}\end{subtable}
-\caption{ORL dataset with laplace noise (mean $\pm$ std)}
-\end{table}
-
-\begin{table}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 22.65 $\pm$ 2.01 & 22.26 $\pm$ 1.89 & 22.65 $\pm$ 2.01 & 22.93 $\pm$ 1.97 & 32.64 $\pm$ 1.01 & 61.89 $\pm$ 0.72 \\
-0.2 & 25.86 $\pm$ 6.08 & 25.53 $\pm$ 6.01 & 25.86 $\pm$ 6.08 & 26.13 $\pm$ 6.05 & 34.80 $\pm$ 3.92 & 61.69 $\pm$ 1.18 \\
-0.3 & 29.92 $\pm$ 10.80 & 29.65 $\pm$ 10.77 & 29.92 $\pm$ 10.80 & 30.17 $\pm$ 10.78 & 37.92 $\pm$ 7.93 & 62.36 $\pm$ 1.94 \\
-0.4 & 34.45 $\pm$ 15.68 & 34.24 $\pm$ 15.67 & 34.45 $\pm$ 15.68 & 34.68 $\pm$ 15.65 & 41.60 $\pm$ 12.36 & 63.82 $\pm$ 4.11 \\
-\end{tabular}\caption{RRE(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 18.66 $\pm$ 1.19 & 21.27 $\pm$ 1.37 & 18.66 $\pm$ 1.19 & 19.07 $\pm$ 0.73 & 9.24 $\pm$ 0.37 & 8.23 $\pm$ 0.23 \\
-0.2 & 17.85 $\pm$ 1.50 & 20.53 $\pm$ 1.25 & 17.85 $\pm$ 1.50 & 18.24 $\pm$ 1.68 & 9.14 $\pm$ 0.36 & 7.86 $\pm$ 0.28 \\
-0.3 & 18.10 $\pm$ 1.14 & 19.79 $\pm$ 2.67 & 18.10 $\pm$ 1.14 & 17.81 $\pm$ 2.00 & 9.09 $\pm$ 0.59 & 8.08 $\pm$ 0.17 \\
-0.4 & 17.50 $\pm$ 2.40 & 19.12 $\pm$ 2.25 & 17.50 $\pm$ 2.40 & 17.02 $\pm$ 2.00 & 8.89 $\pm$ 0.39 & 7.94 $\pm$ 0.22 \\
-\end{tabular}\caption{Acc(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 25.33 $\pm$ 1.44 & 27.97 $\pm$ 2.07 & 25.33 $\pm$ 1.44 & 24.81 $\pm$ 1.17 & 9.64 $\pm$ 0.84 & 8.15 $\pm$ 0.30 \\
-0.2 & 24.59 $\pm$ 2.21 & 26.80 $\pm$ 0.99 & 24.59 $\pm$ 2.21 & 24.54 $\pm$ 1.84 & 9.52 $\pm$ 1.02 & 8.03 $\pm$ 0.58 \\
-0.3 & 24.72 $\pm$ 1.42 & 26.65 $\pm$ 3.03 & 24.72 $\pm$ 1.42 & 24.16 $\pm$ 2.56 & 9.70 $\pm$ 0.78 & 8.47 $\pm$ 0.46 \\
-0.4 & 23.11 $\pm$ 2.82 & 24.85 $\pm$ 2.62 & 23.11 $\pm$ 2.82 & 22.79 $\pm$ 2.56 & 9.57 $\pm$ 0.99 & 8.20 $\pm$ 0.52 \\
-\end{tabular}\caption{NMI(\%)}\end{subtable}
-\caption{CroppedYaleB dataset with laplace noise (mean $\pm$ std)}
-\end{table}
-
-\begin{table}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 16.00 $\pm$ 0.05 & 15.67 $\pm$ 0.05 & 16.00 $\pm$ 0.05 & 16.08 $\pm$ 0.04 & 24.87 $\pm$ 0.08 & 38.39 $\pm$ 0.22 \\
-0.2 & 16.25 $\pm$ 0.06 & 15.97 $\pm$ 0.06 & 16.25 $\pm$ 0.06 & 16.32 $\pm$ 0.05 & 24.69 $\pm$ 0.09 & 36.88 $\pm$ 0.25 \\
-0.3 & 16.70 $\pm$ 0.07 & 16.50 $\pm$ 0.07 & 16.70 $\pm$ 0.07 & 16.75 $\pm$ 0.06 & 24.78 $\pm$ 0.07 & 35.24 $\pm$ 0.21 \\
-0.4 & 17.38 $\pm$ 0.08 & 17.29 $\pm$ 0.08 & 17.38 $\pm$ 0.08 & 17.42 $\pm$ 0.07 & 25.45 $\pm$ 0.04 & 34.18 $\pm$ 0.07 \\
-\end{tabular}\caption{RRE(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 71.00 $\pm$ 3.59 & 72.28 $\pm$ 2.91 & 71.00 $\pm$ 3.59 & 71.78 $\pm$ 0.87 & 48.22 $\pm$ 0.94 & 21.00 $\pm$ 1.48 \\
-0.2 & 70.83 $\pm$ 3.52 & 72.33 $\pm$ 2.35 & 70.83 $\pm$ 3.52 & 70.22 $\pm$ 2.01 & 45.67 $\pm$ 2.75 & 20.39 $\pm$ 0.38 \\
-0.3 & 70.78 $\pm$ 1.34 & 71.61 $\pm$ 1.59 & 70.78 $\pm$ 1.34 & 69.00 $\pm$ 1.81 & 39.17 $\pm$ 1.82 & 19.11 $\pm$ 0.87 \\
-0.4 & 67.61 $\pm$ 1.34 & 71.56 $\pm$ 1.24 & 67.61 $\pm$ 1.34 & 68.94 $\pm$ 2.13 & 32.89 $\pm$ 1.52 & 19.11 $\pm$ 0.71 \\
-\end{tabular}\caption{Acc(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 84.17 $\pm$ 1.75 & 85.02 $\pm$ 1.30 & 84.17 $\pm$ 1.75 & 84.21 $\pm$ 0.78 & 67.49 $\pm$ 0.65 & 40.31 $\pm$ 1.38 \\
-0.2 & 84.03 $\pm$ 1.45 & 85.06 $\pm$ 1.33 & 84.03 $\pm$ 1.45 & 84.10 $\pm$ 0.83 & 64.51 $\pm$ 1.65 & 39.37 $\pm$ 1.03 \\
-0.3 & 83.23 $\pm$ 0.69 & 84.07 $\pm$ 0.71 & 83.23 $\pm$ 0.69 & 82.81 $\pm$ 1.09 & 59.13 $\pm$ 1.28 & 37.85 $\pm$ 1.92 \\
-0.4 & 81.05 $\pm$ 1.04 & 83.75 $\pm$ 0.52 & 81.05 $\pm$ 1.04 & 82.55 $\pm$ 1.30 & 52.32 $\pm$ 1.08 & 37.35 $\pm$ 0.41 \\
-\end{tabular}\caption{NMI(\%)}\end{subtable}
-\caption{ORL dataset with uniform noise (mean $\pm$ std)}
-\end{table}
-
-\begin{table}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 21.22 $\pm$ 0.07 & 20.91 $\pm$ 0.10 & 21.22 $\pm$ 0.07 & 21.49 $\pm$ 0.14 & 31.88 $\pm$ 0.20 & 63.19 $\pm$ 0.31 \\
-0.2 & 21.43 $\pm$ 0.08 & 21.13 $\pm$ 0.09 & 21.43 $\pm$ 0.08 & 21.63 $\pm$ 0.13 & 31.59 $\pm$ 0.19 & 63.67 $\pm$ 0.18 \\
-0.3 & 21.88 $\pm$ 0.07 & 21.60 $\pm$ 0.08 & 21.88 $\pm$ 0.07 & 21.99 $\pm$ 0.12 & 31.57 $\pm$ 0.19 & 64.17 $\pm$ 0.15 \\
-0.4 & 22.57 $\pm$ 0.07 & 22.33 $\pm$ 0.07 & 22.57 $\pm$ 0.07 & 22.63 $\pm$ 0.10 & 31.96 $\pm$ 0.20 & 64.90 $\pm$ 0.13 \\
-\end{tabular}\caption{RRE(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 18.33 $\pm$ 0.94 & 20.66 $\pm$ 0.74 & 18.33 $\pm$ 0.94 & 18.50 $\pm$ 0.61 & 9.20 $\pm$ 0.40 & 7.95 $\pm$ 0.21 \\
-0.2 & 18.91 $\pm$ 0.88 & 20.74 $\pm$ 0.77 & 18.91 $\pm$ 0.88 & 18.87 $\pm$ 0.64 & 9.00 $\pm$ 0.38 & 7.69 $\pm$ 0.10 \\
-0.3 & 19.10 $\pm$ 1.04 & 21.02 $\pm$ 0.54 & 19.10 $\pm$ 1.04 & 18.78 $\pm$ 0.82 & 8.88 $\pm$ 0.16 & 7.65 $\pm$ 0.33 \\
-0.4 & 18.74 $\pm$ 0.99 & 20.30 $\pm$ 0.61 & 18.74 $\pm$ 0.99 & 18.26 $\pm$ 0.89 & 8.97 $\pm$ 0.31 & 7.78 $\pm$ 0.15 \\
-\end{tabular}\caption{Acc(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 25.75 $\pm$ 1.45 & 29.13 $\pm$ 1.12 & 25.75 $\pm$ 1.45 & 25.28 $\pm$ 1.19 & 9.47 $\pm$ 0.43 & 8.31 $\pm$ 0.62 \\
-0.2 & 26.42 $\pm$ 1.05 & 27.18 $\pm$ 0.97 & 26.42 $\pm$ 1.05 & 25.60 $\pm$ 1.41 & 8.91 $\pm$ 0.47 & 8.21 $\pm$ 0.23 \\
-0.3 & 25.97 $\pm$ 1.28 & 28.05 $\pm$ 0.73 & 25.97 $\pm$ 1.28 & 25.71 $\pm$ 1.08 & 9.06 $\pm$ 0.89 & 8.63 $\pm$ 0.39 \\
-0.4 & 24.35 $\pm$ 0.71 & 27.04 $\pm$ 0.81 & 24.35 $\pm$ 0.71 & 25.06 $\pm$ 1.09 & 8.83 $\pm$ 0.82 & 9.26 $\pm$ 0.41 \\
-\end{tabular}\caption{NMI(\%)}\end{subtable}
-\caption{CroppedYaleB dataset with uniform noise (mean $\pm$ std)}
-\end{table}
-
-\begin{table}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 35.66 $\pm$ 11.56 & 35.33 $\pm$ 11.63 & 35.66 $\pm$ 11.56 & 35.72 $\pm$ 11.55 & 41.52 $\pm$ 9.89 & 39.19 $\pm$ 4.07 \\
-0.2 & 61.65 $\pm$ 24.11 & 61.41 $\pm$ 24.21 & 61.65 $\pm$ 24.11 & 61.69 $\pm$ 24.11 & 66.41 $\pm$ 22.93 & 59.67 $\pm$ 18.84 \\
-0.3 & 82.44 $\pm$ 31.43 & 82.29 $\pm$ 31.57 & 82.44 $\pm$ 31.43 & 82.49 $\pm$ 31.44 & 86.88 $\pm$ 30.82 & 80.19 $\pm$ 29.38 \\
-0.4 & 95.19 $\pm$ 32.68 & 95.15 $\pm$ 32.87 & 95.19 $\pm$ 32.68 & 95.23 $\pm$ 32.68 & 98.05 $\pm$ 31.22 & 93.38 $\pm$ 32.77 \\
-\end{tabular}\caption{RRE(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 67.33 $\pm$ 2.44 & 67.33 $\pm$ 2.14 & 67.33 $\pm$ 2.44 & 67.56 $\pm$ 1.28 & 40.06 $\pm$ 3.63 & 20.00 $\pm$ 1.80 \\
-0.2 & 60.83 $\pm$ 7.03 & 62.06 $\pm$ 7.51 & 60.83 $\pm$ 7.03 & 60.67 $\pm$ 7.33 & 29.89 $\pm$ 8.14 & 19.22 $\pm$ 1.07 \\
-0.3 & 44.72 $\pm$ 17.92 & 45.61 $\pm$ 16.74 & 44.72 $\pm$ 17.92 & 45.06 $\pm$ 18.88 & 24.50 $\pm$ 9.27 & 18.00 $\pm$ 1.20 \\
-0.4 & 36.94 $\pm$ 23.91 & 36.61 $\pm$ 23.49 & 36.94 $\pm$ 23.91 & 35.72 $\pm$ 21.70 & 22.44 $\pm$ 7.35 & 17.89 $\pm$ 2.32 \\
-\end{tabular}\caption{Acc(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 81.82 $\pm$ 1.10 & 82.84 $\pm$ 1.29 & 81.82 $\pm$ 1.10 & 82.01 $\pm$ 0.45 & 59.19 $\pm$ 2.82 & 37.95 $\pm$ 2.53 \\
-0.2 & 76.73 $\pm$ 4.94 & 77.38 $\pm$ 5.72 & 76.73 $\pm$ 4.94 & 76.57 $\pm$ 5.80 & 48.39 $\pm$ 8.80 & 37.37 $\pm$ 1.09 \\
-0.3 & 62.40 $\pm$ 15.42 & 64.25 $\pm$ 15.25 & 62.40 $\pm$ 15.42 & 62.95 $\pm$ 16.24 & 42.34 $\pm$ 9.91 & 37.24 $\pm$ 2.19 \\
-0.4 & 52.64 $\pm$ 21.44 & 53.22 $\pm$ 21.16 & 52.64 $\pm$ 21.44 & 51.88 $\pm$ 20.86 & 40.25 $\pm$ 8.42 & 35.59 $\pm$ 1.66 \\
-\end{tabular}\caption{NMI(\%)}\end{subtable}
-\caption{ORL dataset with gaussian noise (mean $\pm$ std)}
-\end{table}
-
-\begin{table}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 46.64 $\pm$ 14.94 & 46.21 $\pm$ 15.08 & 46.64 $\pm$ 14.94 & 46.81 $\pm$ 14.88 & 50.38 $\pm$ 12.11 & 64.27 $\pm$ 3.45 \\
-0.2 & 82.04 $\pm$ 32.76 & 81.81 $\pm$ 32.94 & 82.04 $\pm$ 32.76 & 82.16 $\pm$ 32.71 & 82.72 $\pm$ 29.84 & 85.95 $\pm$ 19.81 \\
-0.3 & 115.07 $\pm$ 47.10 & 114.94 $\pm$ 47.26 & 115.07 $\pm$ 47.10 & 115.19 $\pm$ 47.07 & 114.53 $\pm$ 44.82 & 114.12 $\pm$ 37.20 \\
-0.4 & 142.41 $\pm$ 56.49 & 142.41 $\pm$ 56.67 & 142.41 $\pm$ 56.49 & 142.50 $\pm$ 56.45 & 142.40 $\pm$ 55.63 & 141.40 $\pm$ 51.19 \\
-\end{tabular}\caption{RRE(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 16.14 $\pm$ 1.91 & 16.33 $\pm$ 2.26 & 16.14 $\pm$ 1.91 & 15.20 $\pm$ 1.74 & 8.48 $\pm$ 0.23 & 8.08 $\pm$ 0.31 \\
-0.2 & 12.80 $\pm$ 2.89 & 13.30 $\pm$ 3.78 & 12.80 $\pm$ 2.89 & 12.34 $\pm$ 2.86 & 8.12 $\pm$ 0.24 & 7.97 $\pm$ 0.22 \\
-0.3 & 10.64 $\pm$ 2.98 & 10.98 $\pm$ 3.53 & 10.64 $\pm$ 2.98 & 10.38 $\pm$ 2.33 & 7.92 $\pm$ 0.24 & 7.82 $\pm$ 0.28 \\
-0.4 & 10.04 $\pm$ 2.76 & 10.10 $\pm$ 3.70 & 10.04 $\pm$ 2.76 & 9.63 $\pm$ 2.24 & 7.98 $\pm$ 0.34 & 7.98 $\pm$ 0.22 \\
-\end{tabular}\caption{Acc(\%)}\end{subtable}
-\begin{subtable}{\linewidth}
-\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
-0.1 & 20.59 $\pm$ 3.12 & 21.81 $\pm$ 3.30 & 20.59 $\pm$ 3.12 & 20.29 $\pm$ 2.88 & 8.70 $\pm$ 0.44 & 8.30 $\pm$ 0.42 \\
-0.2 & 14.83 $\pm$ 4.78 & 15.16 $\pm$ 5.78 & 14.83 $\pm$ 4.78 & 14.20 $\pm$ 4.55 & 8.07 $\pm$ 0.56 & 7.90 $\pm$ 0.30 \\
-0.3 & 11.70 $\pm$ 5.30 & 12.16 $\pm$ 5.96 & 11.70 $\pm$ 5.30 & 11.11 $\pm$ 5.04 & 7.66 $\pm$ 0.36 & 7.64 $\pm$ 0.63 \\
-0.4 & 10.95 $\pm$ 5.16 & 11.18 $\pm$ 6.04 & 10.95 $\pm$ 5.16 & 10.88 $\pm$ 5.53 & 7.78 $\pm$ 0.52 & 7.56 $\pm$ 0.37 \\
-\end{tabular}\caption{NMI(\%)}\end{subtable}
-\caption{CroppedYaleB dataset with gaussian noise (mean $\pm$ std)}
-\end{table}
+\begin{figure}
+\includegraphics[width=\linewidth]{ORL-gaussian.png}
+\caption{ORL gaussian noise level vs evaluation metrics \label{fig:ORL-gaussian}}
+\end{figure}
+\begin{figure}
+\includegraphics[width=\linewidth]{CroppedYaleB-gaussian-3.png}
+\caption{CroppedYaleB gaussian noise, $\sigma=0.4$ \label{fig:CroppedYaleB-gaussian-3}}
+\end{figure}
+\begin{figure}
+\includegraphics[width=\linewidth]{CroppedYaleB-gaussian.png}
+\caption{CroppedYaleB gaussian noise level vs evaluation metrics \label{fig:CroppedYaleB-gaussian}}
+\end{figure}
 
 
 \subsection{Discussion}
@@ -453,6 +240,253 @@ In this report, we have compared several different NMF algorithms. The best perf
 \appendix
 
 \section{Running the code}
-The experiment code is contained in \texttt{code/algorithm/algorithm.py}. It depends on the \texttt{matplotlib} and \texttt{scikit-learn} pip packages which must first be installed. To run the full experiment, run \texttt{code/algorithm/algorithm.py}. It will read the images from the \texttt{data} directory in the current directory and output summary results to stdout as well as writing detailed results to \texttt{results.csv} and images to a \texttt{figures} directory. These default settings and other settings such as number of trials, max iterations, which noise/algorithms to run, etc can be configured via command line arguments. Run \texttt{code/algorithm/algorithm.py -h} for more information. There is also a \texttt{-g} flag for reading the summary results from stdin and outputting the graphs and tables found in the report to a \texttt{figures} directory.
+\begin{itemize}
+\item Dependencies: \texttt{pip install matlib scikit-learn}
+\item Usage: \texttt{./code/algorithm/algorithm.py}
+\item Help: \texttt{./code/algorithm/algorithm.py -h}
+\end{itemize}
+
+\section{Detailed Experiment Results}
+
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 19.31 $\pm$ 0.05 & 19.37 $\pm$ 0.04 & 19.31 $\pm$ 0.05 & 19.28 $\pm$ 0.05 & 16.88 $\pm$ 0.13 & 44.84 $\pm$ 0.62 \\
+0.2 & 24.99 $\pm$ 0.07 & 25.40 $\pm$ 0.09 & 24.99 $\pm$ 0.07 & 24.99 $\pm$ 0.07 & 16.29 $\pm$ 0.17 & 58.80 $\pm$ 0.33 \\
+0.3 & 30.17 $\pm$ 0.12 & 30.99 $\pm$ 0.11 & 30.17 $\pm$ 0.12 & 30.18 $\pm$ 0.12 & 18.33 $\pm$ 0.25 & 66.35 $\pm$ 0.47 \\
+0.4 & 35.04 $\pm$ 0.16 & 36.25 $\pm$ 0.16 & 35.04 $\pm$ 0.16 & 35.06 $\pm$ 0.18 & 26.50 $\pm$ 0.36 & 74.83 $\pm$ 0.51 \\
+\end{tabular}\caption{
+  RRE(\%) on ORL dataset with salt-and-pepper noise (mean $\pm$ std)
+  \label{tab:RRE-ORL-salt-and-pepper}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 64.72 $\pm$ 3.49 & 67.00 $\pm$ 1.78 & 64.72 $\pm$ 3.49 & 66.61 $\pm$ 1.72 & 71.06 $\pm$ 1.68 & 53.89 $\pm$ 2.31 \\
+0.2 & 47.44 $\pm$ 2.30 & 49.17 $\pm$ 5.15 & 47.44 $\pm$ 2.30 & 48.39 $\pm$ 2.51 & 71.72 $\pm$ 3.14 & 64.50 $\pm$ 3.38 \\
+0.3 & 32.89 $\pm$ 0.97 & 32.50 $\pm$ 0.98 & 32.89 $\pm$ 0.97 & 32.72 $\pm$ 1.68 & 68.94 $\pm$ 2.46 & 62.83 $\pm$ 1.91 \\
+0.4 & 25.28 $\pm$ 0.91 & 25.50 $\pm$ 1.83 & 25.28 $\pm$ 0.91 & 25.00 $\pm$ 1.18 & 55.94 $\pm$ 3.73 & 38.44 $\pm$ 1.96 \\
+\end{tabular}\caption{
+  Acc(\%) on ORL dataset with salt-and-pepper noise (mean $\pm$ std)
+  \label{tab:Acc-ORL-salt-and-pepper}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 78.66 $\pm$ 2.70 & 81.06 $\pm$ 1.26 & 78.66 $\pm$ 2.70 & 79.74 $\pm$ 1.02 & 84.34 $\pm$ 1.34 & 70.59 $\pm$ 1.79 \\
+0.2 & 64.58 $\pm$ 1.72 & 65.42 $\pm$ 4.01 & 64.58 $\pm$ 1.72 & 65.35 $\pm$ 1.43 & 84.24 $\pm$ 1.09 & 80.40 $\pm$ 1.73 \\
+0.3 & 51.66 $\pm$ 0.31 & 51.43 $\pm$ 0.69 & 51.66 $\pm$ 0.31 & 52.26 $\pm$ 1.64 & 82.88 $\pm$ 1.88 & 79.30 $\pm$ 1.45 \\
+0.4 & 44.30 $\pm$ 1.56 & 44.29 $\pm$ 1.88 & 44.30 $\pm$ 1.56 & 44.36 $\pm$ 1.00 & 72.83 $\pm$ 2.03 & 59.08 $\pm$ 1.38 \\
+\end{tabular}\caption{
+  NMI(\%) on ORL dataset with salt-and-pepper noise (mean $\pm$ std)
+  \label{tab:NMI-ORL-salt-and-pepper}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 15.07 $\pm$ 1.67 & 14.92 $\pm$ 1.59 & 15.07 $\pm$ 1.67 & 15.13 $\pm$ 1.65 & 22.54 $\pm$ 1.33 & 37.25 $\pm$ 1.86 \\
+0.2 & 17.76 $\pm$ 4.93 & 17.61 $\pm$ 4.87 & 17.76 $\pm$ 4.93 & 17.82 $\pm$ 4.92 & 24.69 $\pm$ 4.10 & 37.01 $\pm$ 2.68 \\
+0.3 & 21.15 $\pm$ 8.61 & 21.01 $\pm$ 8.56 & 21.15 $\pm$ 8.61 & 21.20 $\pm$ 8.59 & 27.53 $\pm$ 7.49 & 37.81 $\pm$ 3.45 \\
+0.4 & 24.91 $\pm$ 12.33 & 24.79 $\pm$ 12.29 & 24.91 $\pm$ 12.33 & 24.96 $\pm$ 12.32 & 30.81 $\pm$ 11.12 & 39.41 $\pm$ 5.49 \\
+\end{tabular}\caption{
+  RRE(\%) on ORL dataset with laplace noise (mean $\pm$ std)
+  \label{tab:RRE-ORL-laplace}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 73.00 $\pm$ 1.76 & 75.50 $\pm$ 3.78 & 73.00 $\pm$ 1.76 & 75.28 $\pm$ 3.54 & 61.33 $\pm$ 1.90 & 29.67 $\pm$ 2.13 \\
+0.2 & 72.44 $\pm$ 2.02 & 76.11 $\pm$ 1.44 & 72.44 $\pm$ 2.02 & 74.50 $\pm$ 3.35 & 63.00 $\pm$ 2.57 & 28.67 $\pm$ 3.63 \\
+0.3 & 73.39 $\pm$ 0.90 & 75.50 $\pm$ 1.41 & 73.39 $\pm$ 0.90 & 76.50 $\pm$ 2.28 & 61.00 $\pm$ 4.60 & 28.33 $\pm$ 3.93 \\
+0.4 & 73.06 $\pm$ 1.98 & 74.33 $\pm$ 2.18 & 73.06 $\pm$ 1.98 & 75.56 $\pm$ 3.29 & 60.94 $\pm$ 4.63 & 27.94 $\pm$ 6.52 \\
+\end{tabular}\caption{
+  Acc(\%) on ORL dataset with laplace noise (mean $\pm$ std)
+  \label{tab:Acc-ORL-laplace}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 85.75 $\pm$ 0.80 & 87.02 $\pm$ 1.72 & 85.75 $\pm$ 0.80 & 85.59 $\pm$ 1.84 & 78.34 $\pm$ 1.48 & 47.25 $\pm$ 2.40 \\
+0.2 & 84.78 $\pm$ 1.28 & 87.13 $\pm$ 0.98 & 84.78 $\pm$ 1.28 & 85.66 $\pm$ 1.91 & 78.57 $\pm$ 2.13 & 47.35 $\pm$ 2.62 \\
+0.3 & 85.32 $\pm$ 0.44 & 86.35 $\pm$ 0.62 & 85.32 $\pm$ 0.44 & 87.53 $\pm$ 1.30 & 77.31 $\pm$ 3.45 & 46.35 $\pm$ 4.24 \\
+0.4 & 85.47 $\pm$ 0.62 & 86.21 $\pm$ 1.11 & 85.47 $\pm$ 0.62 & 86.09 $\pm$ 2.08 & 77.36 $\pm$ 3.56 & 45.85 $\pm$ 6.61 \\
+\end{tabular}\caption{
+  NMI(\%) on ORL dataset with laplace noise (mean $\pm$ std)
+  \label{tab:NMI-ORL-laplace}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 13.96 $\pm$ 0.04 & 13.90 $\pm$ 0.05 & 13.96 $\pm$ 0.04 & 14.01 $\pm$ 0.02 & 21.41 $\pm$ 0.07 & 37.97 $\pm$ 0.24 \\
+0.2 & 14.35 $\pm$ 0.04 & 14.35 $\pm$ 0.05 & 14.35 $\pm$ 0.04 & 14.39 $\pm$ 0.02 & 21.28 $\pm$ 0.09 & 36.70 $\pm$ 0.25 \\
+0.3 & 15.04 $\pm$ 0.05 & 15.13 $\pm$ 0.06 & 15.04 $\pm$ 0.05 & 15.07 $\pm$ 0.03 & 21.96 $\pm$ 0.13 & 35.15 $\pm$ 0.21 \\
+0.4 & 16.04 $\pm$ 0.06 & 16.24 $\pm$ 0.08 & 16.04 $\pm$ 0.06 & 16.07 $\pm$ 0.04 & 23.60 $\pm$ 0.11 & 34.20 $\pm$ 0.06 \\
+\end{tabular}\caption{
+  RRE(\%) on ORL dataset with uniform noise (mean $\pm$ std)
+  \label{tab:RRE-ORL-uniform}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 72.83 $\pm$ 4.05 & 76.06 $\pm$ 1.12 & 72.83 $\pm$ 4.05 & 74.00 $\pm$ 3.80 & 61.83 $\pm$ 2.27 & 23.78 $\pm$ 1.52 \\
+0.2 & 73.00 $\pm$ 2.92 & 73.44 $\pm$ 2.54 & 73.00 $\pm$ 2.92 & 72.61 $\pm$ 3.42 & 60.50 $\pm$ 2.04 & 21.44 $\pm$ 0.48 \\
+0.3 & 73.00 $\pm$ 2.29 & 73.28 $\pm$ 2.35 & 73.00 $\pm$ 2.29 & 73.33 $\pm$ 2.13 & 53.83 $\pm$ 2.20 & 19.11 $\pm$ 0.73 \\
+0.4 & 72.78 $\pm$ 2.73 & 71.94 $\pm$ 2.72 & 72.78 $\pm$ 2.73 & 70.50 $\pm$ 2.04 & 44.39 $\pm$ 3.23 & 18.89 $\pm$ 0.53 \\
+\end{tabular}\caption{
+  Acc(\%) on ORL dataset with uniform noise (mean $\pm$ std)
+  \label{tab:Acc-ORL-uniform}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 85.08 $\pm$ 1.97 & 86.82 $\pm$ 0.93 & 85.08 $\pm$ 1.97 & 85.84 $\pm$ 1.69 & 78.80 $\pm$ 0.79 & 42.28 $\pm$ 2.17 \\
+0.2 & 85.11 $\pm$ 1.91 & 85.56 $\pm$ 0.70 & 85.11 $\pm$ 1.91 & 85.06 $\pm$ 1.80 & 76.61 $\pm$ 1.69 & 39.46 $\pm$ 0.77 \\
+0.3 & 84.90 $\pm$ 1.41 & 85.32 $\pm$ 1.38 & 84.90 $\pm$ 1.41 & 85.01 $\pm$ 1.39 & 70.81 $\pm$ 1.55 & 38.14 $\pm$ 1.33 \\
+0.4 & 84.13 $\pm$ 1.27 & 83.75 $\pm$ 1.03 & 84.13 $\pm$ 1.27 & 83.64 $\pm$ 1.32 & 63.26 $\pm$ 1.57 & 37.00 $\pm$ 1.51 \\
+\end{tabular}\caption{
+  NMI(\%) on ORL dataset with uniform noise (mean $\pm$ std)
+  \label{tab:NMI-ORL-uniform}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 34.26 $\pm$ 11.90 & 34.03 $\pm$ 11.93 & 34.26 $\pm$ 11.90 & 34.29 $\pm$ 11.89 & 39.17 $\pm$ 10.63 & 39.18 $\pm$ 4.29 \\
+0.2 & 60.56 $\pm$ 24.41 & 60.38 $\pm$ 24.48 & 60.56 $\pm$ 24.41 & 60.58 $\pm$ 24.41 & 64.86 $\pm$ 23.76 & 59.78 $\pm$ 18.95 \\
+0.3 & 81.61 $\pm$ 31.78 & 81.49 $\pm$ 31.87 & 81.61 $\pm$ 31.78 & 81.63 $\pm$ 31.78 & 86.19 $\pm$ 31.88 & 80.27 $\pm$ 29.36 \\
+0.4 & 94.70 $\pm$ 33.17 & 94.64 $\pm$ 33.28 & 94.70 $\pm$ 33.17 & 94.73 $\pm$ 33.18 & 97.62 $\pm$ 32.15 & 93.44 $\pm$ 32.70 \\
+\end{tabular}\caption{
+  RRE(\%) on ORL dataset with gaussian noise (mean $\pm$ std)
+  \label{tab:RRE-ORL-gaussian}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 73.00 $\pm$ 2.39 & 74.33 $\pm$ 2.51 & 73.00 $\pm$ 2.39 & 74.39 $\pm$ 1.59 & 59.39 $\pm$ 2.92 & 22.56 $\pm$ 2.29 \\
+0.2 & 71.78 $\pm$ 1.74 & 74.83 $\pm$ 3.02 & 71.78 $\pm$ 1.74 & 73.11 $\pm$ 1.84 & 48.39 $\pm$ 8.46 & 19.72 $\pm$ 2.73 \\
+0.3 & 59.89 $\pm$ 12.59 & 62.22 $\pm$ 13.11 & 59.89 $\pm$ 12.59 & 61.06 $\pm$ 12.75 & 35.94 $\pm$ 19.12 & 19.17 $\pm$ 2.10 \\
+0.4 & 42.00 $\pm$ 24.22 & 42.00 $\pm$ 24.31 & 42.00 $\pm$ 24.22 & 40.83 $\pm$ 24.13 & 30.83 $\pm$ 16.48 & 17.89 $\pm$ 1.67 \\
+\end{tabular}\caption{
+  Acc(\%) on ORL dataset with gaussian noise (mean $\pm$ std)
+  \label{tab:Acc-ORL-gaussian}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 85.50 $\pm$ 1.33 & 85.59 $\pm$ 1.06 & 85.50 $\pm$ 1.33 & 85.65 $\pm$ 1.11 & 75.76 $\pm$ 1.55 & 41.33 $\pm$ 3.34 \\
+0.2 & 84.56 $\pm$ 0.84 & 86.30 $\pm$ 1.85 & 84.56 $\pm$ 0.84 & 84.95 $\pm$ 0.92 & 66.70 $\pm$ 7.21 & 37.15 $\pm$ 3.43 \\
+0.3 & 75.32 $\pm$ 9.81 & 77.36 $\pm$ 10.60 & 75.32 $\pm$ 9.81 & 75.99 $\pm$ 10.05 & 53.08 $\pm$ 17.38 & 37.54 $\pm$ 1.69 \\
+0.4 & 58.32 $\pm$ 21.58 & 58.10 $\pm$ 22.34 & 58.32 $\pm$ 21.58 & 56.90 $\pm$ 22.04 & 47.68 $\pm$ 17.00 & 35.47 $\pm$ 2.14 \\
+\end{tabular}\caption{
+  NMI(\%) on ORL dataset with gaussian noise (mean $\pm$ std)
+  \label{tab:NMI-ORL-gaussian}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 21.88 $\pm$ 0.07 & 22.62 $\pm$ 0.07 & 21.88 $\pm$ 0.07 & 21.90 $\pm$ 0.08 & 24.54 $\pm$ 0.23 & 57.43 $\pm$ 0.36 \\
+0.2 & 26.22 $\pm$ 0.04 & 27.33 $\pm$ 0.07 & 26.22 $\pm$ 0.04 & 26.25 $\pm$ 0.04 & 24.67 $\pm$ 0.20 & 66.75 $\pm$ 0.40 \\
+0.3 & 31.82 $\pm$ 0.08 & 32.79 $\pm$ 0.10 & 31.82 $\pm$ 0.08 & 31.84 $\pm$ 0.08 & 27.40 $\pm$ 0.25 & 74.57 $\pm$ 0.15 \\
+0.4 & 37.88 $\pm$ 0.10 & 38.53 $\pm$ 0.12 & 37.88 $\pm$ 0.10 & 37.91 $\pm$ 0.11 & 34.20 $\pm$ 0.38 & 81.09 $\pm$ 0.16 \\
+\end{tabular}\caption{
+  RRE(\%) on CroppedYaleB dataset with salt-and-pepper noise (mean $\pm$ std)
+  \label{tab:RRE-CroppedYaleB-salt-and-pepper}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 21.97 $\pm$ 0.99 & 20.95 $\pm$ 1.03 & 21.97 $\pm$ 0.99 & 21.08 $\pm$ 1.51 & 19.35 $\pm$ 0.51 & 10.59 $\pm$ 0.18 \\
+0.2 & 18.90 $\pm$ 1.21 & 17.28 $\pm$ 1.30 & 18.90 $\pm$ 1.21 & 19.52 $\pm$ 1.05 & 20.44 $\pm$ 0.63 & 13.02 $\pm$ 0.52 \\
+0.3 & 16.68 $\pm$ 0.77 & 14.44 $\pm$ 0.78 & 16.68 $\pm$ 0.77 & 16.22 $\pm$ 0.79 & 20.35 $\pm$ 0.61 & 14.93 $\pm$ 0.71 \\
+0.4 & 12.80 $\pm$ 0.55 & 12.09 $\pm$ 0.32 & 12.80 $\pm$ 0.55 & 13.15 $\pm$ 0.56 & 18.77 $\pm$ 0.46 & 12.54 $\pm$ 0.90 \\
+\end{tabular}\caption{
+  Acc(\%) on CroppedYaleB dataset with salt-and-pepper noise (mean $\pm$ std)
+  \label{tab:Acc-CroppedYaleB-salt-and-pepper}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 29.25 $\pm$ 1.14 & 29.10 $\pm$ 1.41 & 29.25 $\pm$ 1.14 & 28.93 $\pm$ 1.59 & 23.63 $\pm$ 1.92 & 12.40 $\pm$ 0.79 \\
+0.2 & 26.07 $\pm$ 0.96 & 24.84 $\pm$ 1.37 & 26.07 $\pm$ 0.96 & 25.69 $\pm$ 0.89 & 25.67 $\pm$ 0.75 & 16.69 $\pm$ 1.00 \\
+0.3 & 21.81 $\pm$ 0.67 & 19.72 $\pm$ 1.62 & 21.81 $\pm$ 0.67 & 20.95 $\pm$ 0.67 & 26.72 $\pm$ 1.08 & 18.41 $\pm$ 0.51 \\
+0.4 & 16.03 $\pm$ 0.70 & 14.66 $\pm$ 0.90 & 16.03 $\pm$ 0.70 & 16.08 $\pm$ 0.50 & 24.06 $\pm$ 0.92 & 15.15 $\pm$ 0.88 \\
+\end{tabular}\caption{
+  NMI(\%) on CroppedYaleB dataset with salt-and-pepper noise (mean $\pm$ std)
+  \label{tab:NMI-CroppedYaleB-salt-and-pepper}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 20.89 $\pm$ 2.00 & 21.12 $\pm$ 1.76 & 20.89 $\pm$ 2.00 & 21.08 $\pm$ 1.97 & 29.41 $\pm$ 1.26 & 52.33 $\pm$ 0.55 \\
+0.2 & 24.18 $\pm$ 6.16 & 24.37 $\pm$ 5.88 & 24.18 $\pm$ 6.16 & 24.35 $\pm$ 6.12 & 31.82 $\pm$ 4.48 & 53.20 $\pm$ 1.39 \\
+0.3 & 28.32 $\pm$ 10.93 & 28.48 $\pm$ 10.69 & 28.32 $\pm$ 10.93 & 28.48 $\pm$ 10.90 & 35.20 $\pm$ 8.73 & 54.99 $\pm$ 3.43 \\
+0.4 & 32.94 $\pm$ 15.83 & 33.07 $\pm$ 15.62 & 32.94 $\pm$ 15.83 & 33.07 $\pm$ 15.80 & 39.16 $\pm$ 13.37 & 57.26 $\pm$ 6.27 \\
+\end{tabular}\caption{
+  RRE(\%) on CroppedYaleB dataset with laplace noise (mean $\pm$ std)
+  \label{tab:RRE-CroppedYaleB-laplace}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 23.32 $\pm$ 0.64 & 23.85 $\pm$ 0.97 & 23.32 $\pm$ 0.64 & 24.07 $\pm$ 1.74 & 13.93 $\pm$ 0.69 & 8.56 $\pm$ 0.30 \\
+0.2 & 23.21 $\pm$ 0.76 & 24.48 $\pm$ 1.20 & 23.21 $\pm$ 0.76 & 23.40 $\pm$ 1.03 & 13.95 $\pm$ 1.06 & 8.69 $\pm$ 0.17 \\
+0.3 & 23.52 $\pm$ 0.83 & 23.77 $\pm$ 1.23 & 23.52 $\pm$ 0.83 & 22.54 $\pm$ 0.73 & 13.44 $\pm$ 1.44 & 8.62 $\pm$ 0.15 \\
+0.4 & 22.04 $\pm$ 1.80 & 23.96 $\pm$ 1.29 & 22.04 $\pm$ 1.80 & 22.85 $\pm$ 1.34 & 13.16 $\pm$ 1.49 & 8.40 $\pm$ 0.31 \\
+\end{tabular}\caption{
+  Acc(\%) on CroppedYaleB dataset with laplace noise (mean $\pm$ std)
+  \label{tab:Acc-CroppedYaleB-laplace}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 31.57 $\pm$ 0.83 & 31.39 $\pm$ 1.61 & 31.57 $\pm$ 0.83 & 31.84 $\pm$ 1.56 & 16.67 $\pm$ 1.00 & 8.93 $\pm$ 0.46 \\
+0.2 & 31.28 $\pm$ 0.74 & 32.45 $\pm$ 1.92 & 31.28 $\pm$ 0.74 & 32.10 $\pm$ 2.72 & 16.60 $\pm$ 2.25 & 9.30 $\pm$ 0.24 \\
+0.3 & 32.01 $\pm$ 1.41 & 31.67 $\pm$ 1.66 & 32.01 $\pm$ 1.41 & 31.74 $\pm$ 1.42 & 15.86 $\pm$ 2.52 & 9.40 $\pm$ 0.42 \\
+0.4 & 29.96 $\pm$ 1.54 & 30.78 $\pm$ 2.32 & 29.96 $\pm$ 1.54 & 30.59 $\pm$ 2.17 & 15.55 $\pm$ 2.37 & 8.69 $\pm$ 0.74 \\
+\end{tabular}\caption{
+  NMI(\%) on CroppedYaleB dataset with laplace noise (mean $\pm$ std)
+  \label{tab:NMI-CroppedYaleB-laplace}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 19.47 $\pm$ 0.07 & 19.86 $\pm$ 0.08 & 19.47 $\pm$ 0.07 & 19.65 $\pm$ 0.12 & 28.52 $\pm$ 0.23 & 51.79 $\pm$ 0.92 \\
+0.2 & 19.68 $\pm$ 0.08 & 20.02 $\pm$ 0.06 & 19.68 $\pm$ 0.08 & 19.81 $\pm$ 0.10 & 28.20 $\pm$ 0.23 & 53.12 $\pm$ 0.90 \\
+0.3 & 20.14 $\pm$ 0.09 & 20.42 $\pm$ 0.06 & 20.14 $\pm$ 0.09 & 20.21 $\pm$ 0.09 & 28.24 $\pm$ 0.18 & 56.11 $\pm$ 0.88 \\
+0.4 & 20.85 $\pm$ 0.09 & 21.11 $\pm$ 0.06 & 20.85 $\pm$ 0.09 & 20.88 $\pm$ 0.07 & 28.77 $\pm$ 0.15 & 58.10 $\pm$ 1.16 \\
+\end{tabular}\caption{
+  RRE(\%) on CroppedYaleB dataset with uniform noise (mean $\pm$ std)
+  \label{tab:RRE-CroppedYaleB-uniform}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 23.40 $\pm$ 1.08 & 24.01 $\pm$ 1.05 & 23.40 $\pm$ 1.08 & 23.21 $\pm$ 0.96 & 13.65 $\pm$ 0.48 & 8.59 $\pm$ 0.14 \\
+0.2 & 22.86 $\pm$ 1.06 & 23.72 $\pm$ 0.79 & 22.86 $\pm$ 1.06 & 23.06 $\pm$ 1.20 & 12.97 $\pm$ 0.36 & 8.34 $\pm$ 0.16 \\
+0.3 & 22.50 $\pm$ 0.72 & 23.70 $\pm$ 1.71 & 22.50 $\pm$ 0.72 & 22.31 $\pm$ 0.55 & 12.22 $\pm$ 0.63 & 8.22 $\pm$ 0.08 \\
+0.4 & 22.80 $\pm$ 0.77 & 22.87 $\pm$ 0.92 & 22.80 $\pm$ 0.77 & 21.99 $\pm$ 1.12 & 11.27 $\pm$ 0.32 & 8.00 $\pm$ 0.21 \\
+\end{tabular}\caption{
+  Acc(\%) on CroppedYaleB dataset with uniform noise (mean $\pm$ std)
+  \label{tab:Acc-CroppedYaleB-uniform}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 32.03 $\pm$ 0.96 & 31.99 $\pm$ 1.08 & 32.03 $\pm$ 0.96 & 31.09 $\pm$ 1.21 & 16.77 $\pm$ 0.72 & 9.05 $\pm$ 0.50 \\
+0.2 & 30.56 $\pm$ 0.40 & 31.92 $\pm$ 0.72 & 30.56 $\pm$ 0.40 & 31.34 $\pm$ 0.97 & 15.67 $\pm$ 0.89 & 8.82 $\pm$ 0.24 \\
+0.3 & 31.56 $\pm$ 1.74 & 31.30 $\pm$ 1.08 & 31.56 $\pm$ 1.74 & 30.77 $\pm$ 0.81 & 14.75 $\pm$ 0.84 & 9.18 $\pm$ 0.69 \\
+0.4 & 31.39 $\pm$ 1.11 & 29.92 $\pm$ 1.04 & 31.39 $\pm$ 1.11 & 30.19 $\pm$ 1.59 & 12.82 $\pm$ 0.31 & 9.16 $\pm$ 0.14 \\
+\end{tabular}\caption{
+  NMI(\%) on CroppedYaleB dataset with uniform noise (mean $\pm$ std)
+  \label{tab:NMI-CroppedYaleB-uniform}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 45.13 $\pm$ 15.14 & 44.87 $\pm$ 15.11 & 45.13 $\pm$ 15.14 & 45.26 $\pm$ 15.10 & 48.73 $\pm$ 12.92 & 59.72 $\pm$ 5.98 \\
+0.2 & 80.87 $\pm$ 33.04 & 80.65 $\pm$ 33.12 & 80.87 $\pm$ 33.04 & 80.93 $\pm$ 33.03 & 82.34 $\pm$ 31.01 & 84.27 $\pm$ 22.48 \\
+0.3 & 114.11 $\pm$ 47.41 & 113.97 $\pm$ 47.53 & 114.11 $\pm$ 47.41 & 114.18 $\pm$ 47.40 & 114.82 $\pm$ 45.87 & 113.24 $\pm$ 39.04 \\
+0.4 & 141.66 $\pm$ 56.84 & 141.58 $\pm$ 56.97 & 141.66 $\pm$ 56.84 & 141.75 $\pm$ 56.87 & 142.30 $\pm$ 56.05 & 140.89 $\pm$ 52.29 \\
+\end{tabular}\caption{
+  RRE(\%) on CroppedYaleB dataset with gaussian noise (mean $\pm$ std)
+  \label{tab:RRE-CroppedYaleB-gaussian}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 21.66 $\pm$ 0.76 & 22.48 $\pm$ 0.83 & 21.66 $\pm$ 0.76 & 21.36 $\pm$ 1.37 & 11.55 $\pm$ 0.82 & 8.21 $\pm$ 0.25 \\
+0.2 & 19.47 $\pm$ 2.42 & 19.41 $\pm$ 2.53 & 19.47 $\pm$ 2.42 & 19.45 $\pm$ 3.13 & 10.08 $\pm$ 1.58 & 7.97 $\pm$ 0.23 \\
+0.3 & 15.59 $\pm$ 4.60 & 16.05 $\pm$ 4.90 & 15.59 $\pm$ 4.60 & 15.49 $\pm$ 4.93 & 9.22 $\pm$ 1.26 & 7.84 $\pm$ 0.38 \\
+0.4 & 13.05 $\pm$ 5.93 & 13.15 $\pm$ 5.77 & 13.05 $\pm$ 5.93 & 12.63 $\pm$ 5.41 & 8.81 $\pm$ 1.23 & 7.85 $\pm$ 0.32 \\
+\end{tabular}\caption{
+  Acc(\%) on CroppedYaleB dataset with gaussian noise (mean $\pm$ std)
+  \label{tab:Acc-CroppedYaleB-gaussian}
+}\end{table}
+\begin{table}
+\begin{tabular}{c|cccccc}$\sigma$ & nmf & kl-nmf & l1-nmf & l21-nmf & cim-nmf & tanh-nmf \\\hline
+0.1 & 30.13 $\pm$ 1.14 & 30.73 $\pm$ 1.89 & 30.13 $\pm$ 1.14 & 30.49 $\pm$ 2.00 & 12.96 $\pm$ 1.55 & 8.69 $\pm$ 0.37 \\
+0.2 & 26.28 $\pm$ 3.37 & 26.07 $\pm$ 3.27 & 26.28 $\pm$ 3.37 & 26.50 $\pm$ 4.40 & 10.66 $\pm$ 2.58 & 8.18 $\pm$ 0.40 \\
+0.3 & 19.69 $\pm$ 8.48 & 19.67 $\pm$ 7.83 & 19.69 $\pm$ 8.48 & 19.85 $\pm$ 8.24 & 9.58 $\pm$ 2.85 & 7.61 $\pm$ 1.03 \\
+0.4 & 15.37 $\pm$ 9.62 & 15.21 $\pm$ 8.78 & 15.37 $\pm$ 9.62 & 14.38 $\pm$ 8.90 & 9.32 $\pm$ 2.55 & 7.48 $\pm$ 0.70 \\
+\end{tabular}\caption{
+  NMI(\%) on CroppedYaleB dataset with gaussian noise (mean $\pm$ std)
+  \label{tab:NMI-CroppedYaleB-gaussian}
+}\end{table}
 
 \end{document}

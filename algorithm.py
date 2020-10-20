@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run NMF algorithms and calculate evaluation metrics"""
+"""Run NMF algorithms and print evaluation metrics"""
 import argparse
 from collections import Counter
 from csv import DictReader, DictWriter
@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from sklearn.cluster import KMeans
-from sklearn.decomposition import NMF
 from sklearn.metrics import accuracy_score, normalized_mutual_info_score
 from sklearn.model_selection import train_test_split
 
@@ -82,15 +81,6 @@ def plot(V: np.ndarray, img_size: Tuple[int, int]) -> None:
                cmap=plt.cm.gray)
     plt.xticks(())
     plt.yticks(())
-
-
-def nmf_baseline(K: int, X: np.ndarray,
-                 steps: int) -> Tuple[np.ndarray, np.ndarray]:
-    """Basic NMF algorithm, using sklearn library"""
-    model = NMF(n_components=K, max_iter=steps)
-    W = model.fit_transform(X)
-    H = model.components_
-    return W, H
 
 
 def nmf(K: int,
@@ -235,11 +225,11 @@ def evaluate_algorithm(
     return rre, acc, nmi, W, H
 
 
-def graph(summary: TextIO, figures: str, algorithms: List[str]) -> None:
+def graph(figures: str, algorithms: List[str]) -> None:
     """Read summary results and output graphs and latex tables"""
     data = {}
 
-    for r in DictReader(summary):
+    for r in DictReader(stdin):
         k = (r['dataset'], r['noise'])
 
         if k in data:
@@ -252,12 +242,11 @@ def graph(summary: TextIO, figures: str, algorithms: List[str]) -> None:
 
     for (dataset, noise), d in data.items():
         figure()
-        print('\\begin{table}')
 
         for i, measure in enumerate(MEASURES, 1):
             plt.subplot(1, len(MEASURES), i)
             print(
-                SUBTABLE_START.format(' & '.join(
+                TABLE_START.format(' & '.join(
                     (a.replace('_', '-') for a in algorithms))))
             first = list(d.values())[0]
 
@@ -268,18 +257,19 @@ def graph(summary: TextIO, figures: str, algorithms: List[str]) -> None:
                         100 * float(d[a][i][f'{measure}_std']))
                                                  for a in algorithms))))
 
-            print(SUBTABLE_END.format(measure))
-
             for algorithm, rows in d.items():
                 plt.errorbar([float(r['noiselevel']) for r in rows],
                              [float(r[measure]) for r in rows],
                              [float(r[f'{measure}_std']) for r in rows],
-                             capsize=1)
+                             capsize=5)
 
             plt.xlabel('noise level')
             plt.title(measure)
+            print(
+                TABLE_END.format(measure=measure,
+                                 dataset=dataset,
+                                 noise=noise.replace('_', '-')))
 
-        print(TABLE_END.format(dataset, noise.replace('_', ' ')))
         plt.legend(d.keys())
         plt.tight_layout()
 
@@ -293,12 +283,12 @@ def figure() -> None:
     plt.figure(figsize=(10, 3))
 
 
-def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
+def run_nmf_algorithms(results: TextIO, algorithms: List[str],
                        noises: List[str], trials: int, figures: str, data: str,
                        datasets: List[str], steps: int) -> None:
     """Run all combinations of algorithms and data and record results"""
     header = ['dataset', 'noise', 'noiselevel', 'algorithm'] + MEASURES
-    w_summary = DictWriter(summary, header + [f'{x}_std' for x in MEASURES])
+    w_summary = DictWriter(stdout, header + [f'{x}_std' for x in MEASURES])
     w_summary.writeheader()
     w = DictWriter(results, header + ['trial'])
     w.writeheader()
@@ -393,12 +383,8 @@ def main() -> None:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-r',
                         '--results',
-                        default='results.csv',
-                        help='outcome of each trial')
-    parser.add_argument('-p',
-                        '--figures',
-                        default='figures',
-                        help='output image directory')
+                        help='write outcome of each trial to csv')
+    parser.add_argument('-p', '--figures', help='output image directory')
     parser.add_argument('-k',
                         '--trials',
                         type=int,
@@ -409,27 +395,11 @@ def main() -> None:
                         type=int,
                         default=100,
                         help='number of multiplicative updates')
-    parser.add_argument('-f',
-                        '--summary',
-                        help='summary file, or stdio if not specified')
-    parser.add_argument('-d',
-                        '--no-figures',
-                        dest='figures',
-                        action='store_false',
-                        help='disable image output')
-    parser.add_argument('-s',
-                        '--no-results',
-                        dest='results',
-                        action='store_false',
-                        help='disable results output')
-    parser.add_argument('-q',
-                        '--quiet',
-                        action='store_true',
-                        help='disable summary output')
     parser.add_argument(
         '-n',
         '--noises',
-        default='no_noise,salt_and_pepper,uniform,laplace,gaussian',
+        nargs='+',
+        default=['salt_and_pepper', 'laplace', 'uniform', 'gaussian'],
         help='which noise types to try')
     parser.add_argument('-i',
                         '--data',
@@ -437,41 +407,36 @@ def main() -> None:
                         help='input data directory')
     parser.add_argument('-t',
                         '--datasets',
-                        default='ORL,CroppedYaleB',
+                        nargs='+',
+                        default=['ORL', 'CroppedYaleB'],
                         help='which datasets to try')
-    parser.add_argument('-g',
-                        '--graph',
-                        action='store_true',
-                        help='generate graphs and latex tables from results')
-    parser.add_argument('algorithms',
-                        nargs='*',
-                        default=[
-                            'nmf_baseline', 'nmf', 'kl_nmf', 'l1_nmf',
-                            'l21_nmf', 'cim_nmf', 'tanh_nmf'
-                        ],
-                        help='which algorithms to try')
+    parser.add_argument(
+        '-a',
+        '--algorithms',
+        nargs='+',
+        default=['nmf', 'kl_nmf', 'l1_nmf', 'l21_nmf', 'cim_nmf', 'tanh_nmf'],
+        help='which algorithms to try')
+    parser.add_argument(
+        '-g',
+        '--graph',
+        action='store_true',
+        help='read results from stdin and generate graphs and latex tables')
     args = parser.parse_args()
 
     if args.figures:
         Path(args.figures).mkdir(parents=True, exist_ok=True)
 
     if args.graph:
-        with open(args.summary if args.summary else os.devnull) as f:
-            graph(f if args.summary else stdin, args.figures, args.algorithms)
-
+        graph(args.figures, args.algorithms)
         return
 
-    with open(args.summary if args.summary and not args.quiet else os.devnull,
-              'w') as o, open(args.results or os.devnull, 'w') as r:
-        run_nmf_algorithms(o if args.summary or args.quiet else stdout, r,
-                           args.algorithms, args.noises.split(','),
-                           args.trials, args.figures, args.data,
-                           args.datasets.split(','), args.steps)
+    with open(args.reesults or os.devnulll, 'w') as r:
+        run_nmf_algorithms(r, args.algorithms, args.noises, args.trials,
+                           args.figures, args.data, args.datasets, args.steps)
 
 
 SCALE = 255
 ALGORITHMS = {
-    'nmf_baseline': nmf_baseline,
     'nmf': nmf,
     'kl_nmf': kl_nmf,
     'l1_nmf': l1_nmf,
@@ -488,12 +453,12 @@ NOISES = {
     'gaussian': (gaussian, [0.1, 0.2, 0.3, 0.4])
 }
 MEASURES = ['RRE', 'Acc', 'NMI']
-SUBTABLE_START = """\\begin{{subtable}}{{\\linewidth}}
+TABLE_START = """\\begin{{table}}
 \\begin{{tabular}}{{c|cccccc}}$\\sigma$ & {} \\\\\\hline"""
-SUBTABLE_END = '\\end{{tabular}}\\caption{{{}(\\%)}}\\end{{subtable}}'
-TABLE_END = """\\caption{{{} dataset with {} noise (mean $\\pm$ std)}}
-\\end{{table}}
-"""
+TABLE_END = """\\end{{tabular}}\\caption{{
+  {measure}(\\%) on {dataset} dataset with {noise} noise (mean $\\pm$ std)
+  \\label{{tab:{measure}-{dataset}-{noise}}}
+}}\\end{{table}}"""
 
 if __name__ == '__main__':
     main()
