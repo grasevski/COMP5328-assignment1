@@ -46,10 +46,10 @@ The Non-negative Matrix Factorization (NMF) is a powerful tool for analysing hig
 V_i = \begin{bmatrix}
 w_{i,1} & w_{i,2} & \dots & w_{i,k-1} & w_{i,k}
 \end{bmatrix} \begin{bmatrix}
-h_1\\ 
-h_2\\ 
-\dots\\ 
-h_{k-1}\\ 
+h_1\\
+h_2\\
+\dots\\
+h_{k-1}\\
 h_k
 \end{bmatrix}
 \end{equation}
@@ -435,10 +435,10 @@ where $I \left ( \cdot , \cdot \right )$ is mutual information and $H \left ( \c
 \subsection{Discussion}
 From the result we can clearly observe that NMF, KL-NMF, $L_1$-NMF, and $L_{2,1}$-NMF have similar performance, where the impact of noises on accuracy, NMI and RRE are very alike. These algorithms all capable of generating good results without noise, however, they are very sensitive to contaminated data, as the result show their accuracy decreases significantly when exposed to noise. Overall, based on the results, these algorithms are not as robust as the other algorithm, such as CIN-NMF or tanh-NMF, i.e. the robust algorithm are not sensitive to noise and performed relatively well even with noise introduced.
 
-However, there is a trade-off between robustness and accuracy. Although the robust algorithms are relatively insensitive to noises, a lower level of accuracy is shown in comparison to the other algorithms. 
+However, there is a trade-off between robustness and accuracy. Although the robust algorithms are relatively insensitive to noises, a lower level of accuracy is shown in comparison to the other algorithms.
 
 \section{Conclusion}
-In this report, we have compared several different NMF algorithms. The best performing algorithm, on a clean dataset is the KL-NMF, the most robust algorithm being tanh-NMF. Through comparison, there is an apparent trade-off between robustness and accuracy, the future research of NMF algorithm can focus on improving the accuracy while retain the robust property of the algorithm. 
+In this report, we have compared several different NMF algorithms. The best performing algorithm, on a clean dataset is the KL-NMF, the most robust algorithm being tanh-NMF. Through comparison, there is an apparent trade-off between robustness and accuracy, the future research of NMF algorithm can focus on improving the accuracy while retain the robust property of the algorithm.
 
 
 \begin{thebibliography}{9}
