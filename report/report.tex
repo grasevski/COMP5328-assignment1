@@ -119,7 +119,7 @@ The datasets used in this report are ORL, and CroppedYaleB. ORL is a facial imag
 \begin{enumerate}
 \item The image size is scaled down to reduce computation time
 \item The image data is scaled down from the range $\left [ 0,255 \right ]$ to $\left [ 0,1 \right ]$ (by dividing by 255), in order to ensure numerical stability and speed up the convergence
-\item After applying noise, the image data is clipped to the range $\left [ \left [ 10^{-7},1 \right ],1 \right ]$ to avoid division by zero in the multiplicative updates
+\item After applying noise, the image data is clipped to the range $\left [ 10^{-7},1 \right ]$ to avoid division by zero in the multiplicative updates
 \end{enumerate}
 
 \subsection{Evaluation metrics}
