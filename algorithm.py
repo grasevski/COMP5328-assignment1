@@ -235,8 +235,8 @@ def evaluate_algorithm(
     return rre, acc, nmi, W, H
 
 
-def graph(summary: TextIO, figures: str) -> None:
-    """Read summary results and output graphs"""
+def graph(summary: TextIO, figures: str, algorithms: List[str]) -> None:
+    """Read summary results and output graphs and latex tables"""
     data = {}
 
     for r in DictReader(summary):
@@ -252,9 +252,23 @@ def graph(summary: TextIO, figures: str) -> None:
 
     for (dataset, noise), d in data.items():
         figure()
+        print('\\begin{table}')
 
         for i, measure in enumerate(MEASURES, 1):
             plt.subplot(1, len(MEASURES), i)
+            print(
+                SUBTABLE_START.format(' & '.join(
+                    (a.replace('_', '-') for a in algorithms))))
+            first = list(d.values())[0]
+
+            for i, r in enumerate(first):
+                print('{} & {} \\\\'.format(
+                    r['noiselevel'], ' & '.join(('{:.2f} $\\pm$ {:.2f}'.format(
+                        100 * float(d[a][i][measure]),
+                        100 * float(d[a][i][f'{measure}_std']))
+                                                 for a in algorithms))))
+
+            print(SUBTABLE_END.format(measure))
 
             for algorithm, rows in d.items():
                 plt.errorbar([float(r['noiselevel']) for r in rows],
@@ -264,13 +278,17 @@ def graph(summary: TextIO, figures: str) -> None:
             plt.xlabel('noise level')
             plt.title(measure)
 
+        print(TABLE_END.format(dataset, noise.replace('_', ' ')))
         plt.legend(d.keys())
         plt.tight_layout()
-        plt.savefig(f'{figures}/{dataset}-{noise}.png')
+
+        if figures:
+            plt.savefig(f'{figures}/{dataset}-{noise}.png')
 
 
 def figure() -> None:
     """Helper to create new figure"""
+    plt.close()
     plt.figure(figsize=(10, 3))
 
 
@@ -305,11 +323,7 @@ def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
         for noise, noise_fn, k, p in ((noise, NOISES[noise][0], k, p)
                                       for noise in noises
                                       for k, p in enumerate(NOISES[noise][1])):
-            row = {
-                'dataset': dataset,
-                'noise': noise.replace('_', '-'),
-                'noiselevel': p,
-            }
+            row = {'dataset': dataset, 'noise': noise, 'noiselevel': p}
 
             # Add Noise
             np.random.seed(0)
@@ -331,8 +345,6 @@ def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
                             plt.title(title)
 
             for a, algorithm in enumerate(algorithms, 1):
-                row['algorithm'] = algorithm.replace('_', '-')
-
                 for i, (V, V_hat, Y_hat) in enumerate(zip(Vs, V_hats, Y_hats)):
                     rre[i], acc[i], nmi[i], W, H = evaluate_algorithm(
                         V, V_hat, Y_hat, algorithm, steps)
@@ -366,7 +378,7 @@ def run_nmf_algorithms(summary: TextIO, results: TextIO, algorithms: List[str],
 
             if figures:
                 plt.subplots_adjust(wspace=0, hspace=0)
-                plt.savefig(f'{figures}/{dataset}-{row["noise"]}-{k}.png',
+                plt.savefig(f'{figures}/{dataset}-{noise}-{k}.png',
                             bbox_inches='tight',
                             pad_inches=0)
 
@@ -427,7 +439,7 @@ def main() -> None:
     parser.add_argument('-g',
                         '--graph',
                         action='store_true',
-                        help='generate graphs from results')
+                        help='generate graphs and latex tables from results')
     parser.add_argument('algorithms',
                         nargs='*',
                         default=[
@@ -442,7 +454,8 @@ def main() -> None:
 
     if args.graph:
         with open(args.summary if args.summary else os.devnull) as f:
-            graph(f if args.summary else stdin, args.figures)
+            graph(f if args.summary else stdin, args.figures, args.algorithms)
+
         return
 
     with open(args.summary if args.summary and not args.quiet else os.devnull,
@@ -472,6 +485,12 @@ NOISES = {
     'gaussian': (gaussian, [0.1, 0.2, 0.3, 0.4])
 }
 MEASURES = ['RRE', 'Acc', 'NMI']
+SUBTABLE_START = """\\begin{{subtable}}{{\\linewidth}}
+\\begin{{tabular}}{{c|cccccc}}$\\sigma$ & {} \\\\\\hline"""
+SUBTABLE_END = '\\end{{tabular}}\\caption{{{}(\\%)}}\\end{{subtable}}'
+TABLE_END = """\\caption{{{} dataset with {} noise (mean $\\pm$ std)}}
+\\end{{table}}
+"""
 
 if __name__ == '__main__':
     main()
