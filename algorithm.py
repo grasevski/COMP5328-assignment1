@@ -273,7 +273,8 @@ def graph(summary: TextIO, figures: str, algorithms: List[str]) -> None:
             for algorithm, rows in d.items():
                 plt.errorbar([float(r['noiselevel']) for r in rows],
                              [float(r[measure]) for r in rows],
-                             [float(r[f'{measure}_std']) for r in rows])
+                             [float(r[f'{measure}_std']) for r in rows],
+                             capsize=1)
 
             plt.xlabel('noise level')
             plt.title(measure)
