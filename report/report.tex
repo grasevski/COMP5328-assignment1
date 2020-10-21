@@ -170,7 +170,7 @@ NMF & $\left\|V - WH\right\|^2_F$ & $1$\\\hline
 KL-NMF & $\sum_{ij} V_{ij}\log\left(\frac{V_{ij}}{\left(WH\right)_{ij}}\right) - V_{ij} + \left(WH\right)_{ij}$ & $1$\\\hline
 $L_1$-NMF & $\left\|V - WH\right\|_1$ & $\frac{1}{\left\|V - WH\right\|_1}$\\\hline
 $L_{2,1}$-NMF & $\left\|V - WH\right\|_{2,1}$ & $\frac{1}{\left\|V - WH\right\|_{2,1}}$\\\hline
-CIM-NMF & $\sum_{i=1}^{m}\sum_{j=1}^{n} 1 - \frac{1}{\sqrt{2\pi}\sigma}e^\frac{-\left(V - WH\right)_{ij}^2}{2\sigma^2}$ & \shortstack{$\exp\left(\frac{-E^2}{2\sigma^2}\right)$\\where $\sigma^2 = \frac{1}{2mn}\sum_{i=1}{m}\sum{j=1}{n}E_{ij}^2$}\\\hline
+CIM-NMF & $\sum_{i=1}^{m}\sum_{j=1}^{n} 1 - \frac{1}{\sqrt{2\pi}\sigma}e^\frac{-\left(V - WH\right)_{ij}^2}{2\sigma^2}$ & \shortstack{$\exp\left(\frac{-E^2}{2\sigma^2}\right)$\\where $\sigma^2 = \frac{1}{2mn}\sum_{i=1}^{m}\sum_{j=1}^{n}E_{ij}^2$}\\\hline
 tanh-NMF & \shortstack{$\sum_{ij}\tanh\left(aE_{ij}^2\right)$\\ where $a = \frac{nmp}{\sum_{i=1}{m}\sum_{j=1}{n}E_{ij}^2}$\\ and $p \in \left\{1\right\}$} & \shortstack{$a\left[1 - \tanh^2\left(a\left|E\right|\right)\right]$\\ where $a = \frac{nmp}{\sum_{i=1}^{m}\sum_{j=1}^{n}E_{ij}^2}$\\ and $p \in \left\{1\right\}$}\\\hline
 \end{tabular}
 \caption{Algorithms and objective functions, where $E = V - WH$ \label{tab:objfunc}}
