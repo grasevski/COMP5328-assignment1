@@ -453,7 +453,7 @@ NOISES = {
     'gaussian': (gaussian, [0.1, 0.2, 0.3, 0.4])
 }
 MEASURES = ['RRE', 'Acc', 'NMI']
-TABLE_START = """\\begin{{table}}
+TABLE_START = """\\begin{{table}}[H]
 \\begin{{tabular}}{{c|cccccc}}$\\sigma$ & {} \\\\\\hline"""
 TABLE_END = """\\end{{tabular}}\\caption{{
   {measure}(\\%) on {dataset} dataset with {noise} noise (mean $\\pm$ std)
