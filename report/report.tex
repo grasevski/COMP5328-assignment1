@@ -77,7 +77,7 @@ Note that the Euclidean distance is invariant under these updates if and only if
 \subsection{L1 and L2 regularized NMF}
 The NMF uses a few crucial components of the data to construct an approximation, which means that NMF produces a sparse representation. \cite{luo-peng-fan}
 
-This is a handy feature of the NMF algorithm as most data are sparse in the transform domain, e.g. image in curvelet domain, frequency in Fourier transformation. The $L_1$ and $L_2$ regularized NMF tries to improve the basic NMF by implementing sparse coding. The $L_p$ norm can be shown as below:
+This is a handy feature of the NMF algorithm as most data are sparse in the transform domain, e.g. image in curvelet domain, frequency in Fourier transformation. The $L_1$ and $L_2$ regularized NMF tries to improve the basic NMF by implementing sparse coding and avoiding overfitting. The $L_p$ norm can be shown as below:
 
 \begin{equation}
 \left\|a\right\|_p = \left(\sum_{j=1}^{k}\left|a\right|^p\right)^{\frac{1}{p}}
@@ -103,10 +103,10 @@ Instead of the traditional Euclidean distance, CIM is utilising correntropy to c
 where $k\left(\right)$ is the kernel function, and Gaussian kernel is used. Hence the objective function is:
 
 \begin{equation}
-\sum_{i=1}^{m}\sum_{j=1}^{n} 1 - \frac{1}{\sqrt{2\pi}\sigma}e^\frac{-\left(V - WH\right)_{ij}^2}{2\sigma^2}
+\sum_{i=1}^{m}\sum_{j=1}^{n} 1 - \frac{1}{\sqrt{2\pi}\sigma}\exp\left(\frac{-\left(V - WH\right)_{ij}^2}{2\sigma^2}\right)
 \end{equation}
 
-The mathematical property of Gaussian distribution enables the NMF to retain some robustness, but normalization should be considered when implementing this method. \cite{du-li-shen}
+The mathematical property of Gaussian distribution enables the NMF to retain some robustness, but normalization should be considered when implementing this method to ensure the optimization is numerically stable. \cite{du-li-shen}
 
 \subsection{Kullback-Leibler(KL)-NMF}
 The Kullback-Leibler divergence is another way that the similarity between two variables can be calculated. \cite{fevotte-idier} In the famous Lee and Seung’s NMF paper, a generalised KL divergence or IS-divergence is used. In this paper, we implement based on the KL-divergence. The distance or the similarity can be calculated as follows:
@@ -164,39 +164,39 @@ We apply the following preprocessing to the images:
 
 \subsection{Algorithms and objective functions}
 \begin{table}
-\begin{tabular}{|c|c|}\hline
-\textbf{Algorithm} & \textbf{Objective function}\\\hline\hline
-NMF & $\left\|V - WH\right\|^2_F$ \\\hline
-KL-NMF & $\sum_{ij} V_{ij}\log\left(\frac{V_{ij}}{\left(WH\right)_{ij}}\right) - V_{ij} + \left(WH\right)_{ij}$ \\\hline
-$L_1$-NMF & $\left\|V - WH\right\|_1$ \\\hline
-$L_{2,1}$-NMF & $\left\|V - WH\right\|_{2,1}$ \\\hline
-CIM-NMF & $\sum_{i=1}^{m}\sum_{j=1}^{n} 1 - \frac{1}{\sqrt{2\pi}\sigma}e^\frac{-\left(V - WH\right)_{ij}^2}{2\sigma^2}$ \\\hline
-tanh-NMF & $\sum_{ij}\tanh\left(aE_{ij}^2\right)$ where $E_{ij} = V_{ij} - \sum_r^k W_{ir}H_{rj}$ \\\hline
+\begin{tabular}{|c|c|c|}\hline
+\textbf{Algorithm} & \textbf{Objective function} & $w\left(X,W,H\right)$\\\hline\hline
+NMF & $\left\|V - WH\right\|^2_F$ & $1$\\\hline
+KL-NMF & $\sum_{ij} V_{ij}\log\left(\frac{V_{ij}}{\left(WH\right)_{ij}}\right) - V_{ij} + \left(WH\right)_{ij}$ & $1$\\\hline
+$L_1$-NMF & $\left\|V - WH\right\|_1$ & $\frac{1}{\left\|V - WH\right\|_1}$\\\hline
+$L_{2,1}$-NMF & $\left\|V - WH\right\|_{2,1}$ & $\frac{1}{\left\|V - WH\right\|_{2,1}}$\\\hline
+CIM-NMF & $\sum_{i=1}^{m}\sum_{j=1}^{n} 1 - \frac{1}{\sqrt{2\pi}\sigma}e^\frac{-\left(V - WH\right)_{ij}^2}{2\sigma^2}$ & \shortstack{$\exp\left(\frac{-E^2}{2\sigma^2}\right)$\\where $\sigma^2 = \frac{1}{2mn}\sum_{i=1}{m}\sum{j=1}{n}E_{ij}^2$}\\\hline
+tanh-NMF & \shortstack{$\sum_{ij}\tanh\left(aE_{ij}^2\right)$\\ where $a = \frac{nmp}{\sum_{i=1}{m}\sum_{j=1}{n}E_{ij}^2}$\\ and $p \in \left\{1\right\}$} & \shortstack{$a\left[1 - \tanh^2\left(a\left|E\right|\right)\right]$\\ where $a = \frac{nmp}{\sum_{i=1}^{m}\sum_{j=1}^{n}E_{ij}^2}$\\ and $p \in \left\{1\right\}$}\\\hline
 \end{tabular}
-\caption{Algorithms and objective functions \label{tab:objfunc}}
+\caption{Algorithms and objective functions, where $E = V - WH$ \label{tab:objfunc}}
 \end{table}
 
 \begin{algorithm}
 \begin{algorithmic}
-\REQUIRE $V \in \mathbb{R}^{m \times n}, k \in \mathbb{Z}^+, \beta,\lambda_1,\lambda_2 \in \mathbb{R},w \in \left(\mathbb{R}^{m \times n}, \mathbb{R}^{m \times k}, \mathbb{R}^{k \times n}\right) \to \mathbb{R}^{m \times n}$
+\REQUIRE $V \in \mathbb{R}^{m \times n}, k \in \mathbb{Z}^+, \beta,\lambda_{W1},\lambda_{W2},\lambda_{H1},\lambda_{H2} \in \mathbb{R},w \in \left(\mathbb{R}^{m \times n}, \mathbb{R}^{m \times k}, \mathbb{R}^{k \times n}\right) \to \mathbb{R}^{m \times n}$
 \ENSURE $W \in \mathbb{R}^{m \times k}, H \in \mathbb{R}^{k \times n}$
 \STATE $W,H \gets U\left(0,1\right),U\left(0,1\right)$
 \REPEAT
   \STATE $U \gets w\left(X,W,H\right)$
-  \STATE $W \gets W \otimes \frac{\left[U \otimes V \otimes \left(WH\right)^{\beta-2}\right] H^T}{\left[U \otimes \left(WH\right)^{\beta-1}\right]H^T + \lambda_1 + \lambda_2 W}$
-  \STATE $H \gets H \otimes \frac{W^T \left[U \otimes V \otimes \left(WH\right)^{\beta-2}\right]}{W^T \left[U \otimes \left(WH\right)^{\beta-1}\right] + \lambda_1 + \lambda_2 H}$
+  \STATE $W \gets W \otimes \frac{\left[U \otimes V \otimes \left(WH\right)^{\beta-2}\right] H^T}{\left[U \otimes \left(WH\right)^{\beta-1}\right]H^T + \lambda_{W1} + \lambda_{W2} W}$
+  \STATE $H \gets H \otimes \frac{W^T \left[U \otimes V \otimes \left(WH\right)^{\beta-2}\right]}{W^T \left[U \otimes \left(WH\right)^{\beta-1}\right] + \lambda_{H1} + \lambda_{H2} H}$
 \UNTIL{$\textup{converged}$}
 \end{algorithmic}
-\caption{Weighted NMF with $\beta$-divergence \label{alg:b-wnmf}}
+\caption{Weighted NMF with $\beta$-divergence and regularization\label{alg:b-wnmf}}
 \end{algorithm}
 
 All the NMF algorithms used and their objective functions are shown in table \ref{tab:objfunc}. All algorithms use the weighted multiplicative update rule to compute $W$ and $H$. Therefore iteratively, all algorithms can be implemented by adjusting weight according to its loss function. \cite{arora} Algorithm \ref{alg:b-wnmf} illustrates the generic procedure used by all of the NMF variants tested in this experiment.
 
-Please note $\beta$, $\lambda_1$, $\lambda_2$ allows a broader range of extensions to the algorithm (different objective functions, different regularization) and combinations thereof than have been explored in this experiment.
+Please note $\beta,\lambda_{W1},\lambda_{W2},\lambda_{H1},\lambda_{H2}$ allows a broader range of extensions to the algorithm (different objective functions, different regularization) and combinations thereof than have been explored in this experiment. In this experiment, we set $\beta=1$ for KL-NMF, and $\beta=2$ for algorithms. No regularization is used, i.e. $\lambda_{W1}=\lambda_{W2}=\lambda_{H1}=\lambda_{H2}=0$.
 
-Before experimenting, the objective function shows that theoretically CIM and Tanh NMFs are more robust than other methods, as both Gaussian kernel and tanh function are not sensitive to outliers. It is due to comparing gaussian and tanh to a linear or quadratic function. Extreme values hava a relatively lesser impact when using gaussian or tanh function to update the Weight matrix. 
+Before experimenting, the objective function shows that theoretically CIM and Tanh NMFs are more robust than other methods, as both Gaussian kernel and tanh function are not sensitive to outliers. It is due to comparing gaussian and tanh to a linear or quadratic function. Extreme values hava a relatively lesser impact when using gaussian or tanh function to update the weight matrix.
 
-Each algorithm is applied to both datasets, and an evaluation metrics are recorded.
+Each algorithm is applied to both datasets, and evaluation metrics are recorded.
 
 \subsection{Introduced noises}
 Noises are introduced into the data, and algorithms are evaluated again on the noisy data. The result of noisy data will be compared vertically and horizontally. It will allow us to understand the robustness of the algorithm.
@@ -276,6 +276,8 @@ where $V$ is the noisy image, $\hat{V}$ is the original image, $Z \sim N\left(0,
 \section{Experiment}
 The experiment will evaluate the algorithms introduced in method on the ORL and CroppedYaleB datasets which will be explained in detail later. The algorithm will be evaluated in turn on each noise type listed above.
 
+The algorithms are run on 5 different samplings of 90\% of the data and the mean and standard deviation of the results are recorded. Due to the sensitivity of NMF to initialization, each algorithm is given the same (randomly chosen) initialization point in a given trial to ensure a fair comparison.
+
 \subsection{Dataset}
 The datasets used in this report are ORL, and CroppedYaleB. ORL is a facial image dataset, it contains 400 images with a size of $\left(112,92\right)$. CroppedYaleB is a dataset cropped from YaleB, YaleB is a very large dataset with 5760 images, done by 10 subjects posing 9 photos under 64 different light conditions.
 
@@ -344,6 +346,8 @@ where $I\left(\cdot,\cdot\right)$ is mutual information and $H\left(\cdot\right)
 \caption{CroppedYaleB gaussian noise level vs evaluation metrics \label{fig:CroppedYaleB-gaussian}}
 \end{figure}
 
+Figures \ref{fig:ORL-salt_and_pepper} and \ref{fig:CroppedYaleB-salt_and_pepper} show tanh-NMF and CIM-NMF performing well as the salt-and-pepper noise is increased. However for the other types of noise, they perform relatively poorly. Perhaps this is unsurprising, given that the other types of noise do not simulate outliers and furthermore they match too favorably to the underlying assumptions (NMF with Gaussian noise, $L_1$-NMF with Laplace noise, etc).
+
 
 \subsection{Discussion}
 From the result, we can observe that NMF, KL-NMF, $L_1$-NMF, and $L_{2,1}$-NMF have similar results, where the impact of noise on the accuracy, NMI and RRE are very much alike. These algorithms are all capable of generating good results without noise; however, they are susceptible to contaminated data because the result has shown that their accuracy decreases significantly when exposed to noise. The result matches the prediction made based on the mathematical property of the objective functions, cim-NMF or tanh-NMF are more robust than the other algorithms. Cim-NMF or tanh-NMF are less sensitive to noise, and they performed relatively well even with noise introduced.
@@ -357,7 +361,7 @@ In this report, we have compared several different NMF algorithms. The best perf
 
 \section{Running the code}
 \begin{itemize}
-\item Dependencies: \texttt{pip install matlib scikit-learn}
+\item Dependencies: \texttt{pip install matplotlib scikit-learn}
 \item Usage: \texttt{./code/algorithm/algorithm.py}
 \item Help: \texttt{./code/algorithm/algorithm.py -h}
 \end{itemize}
