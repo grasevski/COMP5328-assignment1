@@ -366,6 +366,18 @@ In this report, we have compared several different NMF algorithms. The best perf
 \item Help: \texttt{./code/algorithm/algorithm.py -h}
 \end{itemize}
 
+The full experiment takes approximately 3 hours to run on a 12-core Macbook Pro. The running time can be reduced by:
+
+\begin{itemize}
+\item reducing the number of trials: \texttt{-k 1}
+\item reducing the number of multiplicative updates: \texttt{-m 50}
+\item reducing the number of noise types: \texttt{-n salt\_and\_pepper laplace}
+\item reducing the number of algorithms: \texttt{-a nmf tanh\_nmf}
+\item reducing the number of datasets: \texttt{-t ORL}
+\end{itemize}
+
+The runtime is roughly linearly proportional to each of the above factors.
+
 \section{Detailed Experiment Results}
 
 \begin{table}[H]
