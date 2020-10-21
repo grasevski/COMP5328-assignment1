@@ -190,7 +190,7 @@ tanh-NMF & $\sum_{ij}\tanh\left(aE_{ij}^2\right)$ where $E_{ij} = V_{ij} - \sum_
 \caption{Weighted NMF with $\beta$-divergence \label{alg:b-wnmf}}
 \end{algorithm}
 
-All the NMF algorithm used and its objective functions are shown in table \ref{tab:objfunc}. All algorithms use the weighted multiplicative update rule to compute $W$ and $H$. Therefore iteratively, all algorithms can be implemented by adjusting weight according to its loss function. \cite{arora} Algorithm \ref{alg:b-wnmf} illustrates the generic procedure used by all of the NMF variants tested in this experiment.
+All the NMF algorithms used and their objective functions are shown in table \ref{tab:objfunc}. All algorithms use the weighted multiplicative update rule to compute $W$ and $H$. Therefore iteratively, all algorithms can be implemented by adjusting weight according to its loss function. \cite{arora} Algorithm \ref{alg:b-wnmf} illustrates the generic procedure used by all of the NMF variants tested in this experiment.
 
 Please note $\beta$, $\lambda_1$, $\lambda_2$ allows a broader range of extensions to the algorithm (different objective functions, different regularization) and combinations thereof than have been explored in this experiment.
 
