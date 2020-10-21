@@ -4,7 +4,12 @@
 \usepackage{url}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{biblatex}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{amsfonts}
 \graphicspath{{../figures/}}
+\addbibresource{references.bib}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
 
@@ -35,11 +40,11 @@
 \maketitle
 
 \begin{abstract}
-In this report, we will explore the different NMF algorithms, including traditional NMF, $L_1$-NMF, $L_{2,1}$-NMF, KL-NMF, CIM-NMF, tanh-NMF and truncated Cauchy NMF. Through experimenting on ORL dataset and CroppedYaleB dataset with arbitrary induced Laplace and salt and pepper noises, we found KL-NMF yields the best results on a clean dataset, whilst tanh-NMF is the most robust out of all algorithms.
+In this report, we will explore the different NMF algorithms, including traditional NMF, $L_1$-NMF, $L_{2,1}$-NMF, KL-NMF, CIM-NMF and tanh-NMF. Through experimenting on ORL dataset and CroppedYaleB dataset with arbitrary induced noises, we found KL-NMF yields the best results on a clean dataset, whilst CIM-NMF is the most robust out of all algorithms.
 \end{abstract}
 
 \section{Introduction}
-The Non-negative Matrix Factorization (NMF) is a powerful tool for analysing high dimensional data, e.g. images, movie ratings, stock market values. NMF can be said to be an approximation algorithm, where a higher dimensional matrix $V$ is approximated by two lower rank matrixes $W,H$ such that $V \approx WH$. Here the matrix $W$ can be also considered as the weight of matrix $H$, hence the individual component of $V$ is the weight sum of $H$, demonstrated as following:
+The Non-negative Matrix Factorization (NMF) is a powerful tool for analysing high dimensional data, e.g. images, movie ratings, stock market values. NMF can be said to be an approximation algorithm, where a higher dimensional matrix $V$ is approximated by two lower rank matrixes $W,H$ such that $V \approx WH$. \cite{wang-zhang} Here the matrix $W$ can be also considered as the weight of matrix $H$, hence the individual component of $V$ is the weight sum of $H$, demonstrated as following:
 
 \begin{equation}
 V_i = \begin{bmatrix}
@@ -53,24 +58,26 @@ h_k
 \end{bmatrix}
 \end{equation}
 
-In this report, comparison different types of NMF algorithm will be performed, including the basic NMF (i.e. with no sparse), $L_1$ and $L_2$ regularized, tanh NMF and truncated Cauchy NMF. All of the algorithms will be used on two image datasets, and the result in terms of efficiency and accuracy of the algorithms will be shown and discussed.
+In this report, comparison different types of NMF algorithm will be performed. All of the algorithms will be used on two image datasets, and the result in terms of efficiency and accuracy of the algorithms will be shown and discussed.
 
 \section{Related work}
 \subsection{Basic NMF and Multiplicative Update Rule (MUR)}
-The traditional or basic NMF has an objective function of $min_{W \leq 0, H \leq 0}\left\|V - WH\right\|_F^2$. \cite{source1} It is obvious that the basic NMF's objective function is $L_2$-norm, it means the NMF assume the noise distribution to be a gaussian distribution. The multiplicative update rule uses the fact that the Euclidean distance $\left\|V - WH\right\|$ is non-increasing under the rule:
+The traditional or basic NMF has an objective function of $min_{W \leq 0, H \leq 0}\left\|V - WH\right\|_F^2$. \cite{lee-seung} It was evident that the basic NMF's objective function is $L_2$-norm; it means the NMF can be sensitive to noise. The multiplicative update rule uses the fact that the Euclidean distance $\left\|V - WH\right\|$ is non-increasing under the rule:
 
 \begin{equation}
-H_{kn} \leftarrow H_{kn} \frac{\left(W^T V\right)_{kn}}{\left(W^T WH\right)_{kn}}
+H_{kn} \gets H_{kn} \frac{\left(W^T V\right)_{kn}}{\left(W^T WH\right)_{kn}}
 \end{equation}
 
 \begin{equation}
-W_{mk} \leftarrow W_{mk} \frac{\left(V H^T\right)_{mk}}{\left(WH H^T\right)_{mk}}
+W_{mk} \gets W_{mk} \frac{\left(V H^T\right)_{mk}}{\left(WH H^T\right)_{mk}}
 \end{equation}
 
-Note that the Euclidean distance is invariant under these updates if and only if $W$ and $H$ are at a stationary point. \cite{source2} The simplicity and elegance of the multiplicative update rule made it a popular choice for computing NMFs, even extending its use to semi-nonnegative matrix factorization where $H$ is nonnegative, but $X$ can be both negative and nonnegative. \cite{source3}
+Note that the Euclidean distance is invariant under these updates if and only if $W$ and $H$ are at a stationary point. \cite{marques-maciel-naviner-cai-yang} The simplicity, elegance and computational tractability of the multiplicative update rule made it a popular choice for computing NMFs, even extending its use to semi-nonnegative matrix factorization where $H$ is non-negative, but $X$ can be both negative and non-negative. \cite{ding-li-jordan}
 
 \subsection{L1 and L2 regularized NMF}
-The NMF uses a few important components of the data to construct an approximation, which means that a sparse representation is produced by NMF. \cite{source4} Evidently this is a very useful feature of the NMF algorithm as most data are sparse in transform domain, e.g. image in curvelet domain \cite{source5}, frequency in Fourier transformation. \cite{source6} The $L_1$ and $L_2$ regularized NMF tries to improve the basic NMF by implementing sparse coding. The $L_p$ norm can be shown as below:
+The NMF uses a few crucial components of the data to construct an approximation, which means that NMF produces a sparse representation. \cite{luo-peng-fan}
+
+This is a handy feature of the NMF algorithm as most data are sparse in the transform domain, e.g. image in curvelet domain, frequency in Fourier transformation. The $L_1$ and $L_2$ regularized NMF tries to improve the basic NMF by implementing sparse coding. The $L_p$ norm can be shown as below:
 
 \begin{equation}
 \left\|a\right\|_p = \left(\sum_{j=1}^{k}\left|a\right|^p\right)^{\frac{1}{p}}
@@ -86,6 +93,66 @@ where $\Psi\left(R\right)$ is the sparsity constraint.
 
 However, $L_1$ and $L_2$ norm based NMF can be sensitive to outliers and sometimes unstable. The regularization could improve stability but cannot eliminate the impact of outliers.
 
+\subsection{Correntropy Induced Matrix (CIM) NMF}
+Instead of the traditional Euclidean distance, CIM is utilising correntropy to calculate the similarity between two variables \cite{liu-pokharel-principe}:
+
+\begin{equation}
+\hat{V_\sigma}\left(x,y\right) = \frac{1}{n}\sum_{i=1}^{n}k_\sigma\left(x_i - y_i\right)
+\end{equation}
+
+where $k\left(\right)$ is the kernel function, and Gaussian kernel is used. Hence the objective function is:
+
+\begin{equation}
+\sum_{i=1}^{m}\sum_{j=1}^{n} 1 - \frac{1}{\sqrt{2\pi}\sigma}e^\frac{-\left(V - WH\right)_{ij}^2}{2\sigma^2}
+\end{equation}
+
+The mathematical property of Gaussian distribution enables the NMF to retain some robustness, but normalization should be considered when implementing this method. \cite{du-li-shen}
+
+\subsection{Kullback-Leibler(KL)-NMF}
+The Kullback-Leibler divergence is another way that the similarity between two variables can be calculated. \cite{fevotte-idier} In the famous Lee and Seung’s NMF paper, a generalised KL divergence or IS-divergence is used. In this paper, we implement based on the KL-divergence. The distance or the similarity can be calculated as follows:
+
+\begin{equation}
+D_{\textup{KL}}\left(V|WH\right) = \sum_{ij}V_{ij} \log\left(\frac{V_{ij}}{\left(WH\right)_{ij}}\right) - V_{ij} + \left(WH\right)_{ij}
+\end{equation}
+
+Hence the minimization of this function is the objective. This method could potentially improve robustness compared to traditional NMF. \cite{finesso-spreij}
+
+\subsection{Half-Quadratic minimization}
+To compute and find the minimization of the some of the non-quadratic loss functions, the half quadratic minimization technique is used, more recently the half-quadratic programming algorithm is widely used. \cite{geman-chengda} Half quadratic minimization uses half-quadratic theory \cite{nikolova-chan} whereby adding an auxiliary variable can effectively minimize a non-quadratic or non-convex loss function. The technique can be applied to NMF, where the minimization can be solved by fixing the loss function to solve for the auxiliary variable, then use the auxiliary variable to update the loss function, then repeat this process until it converges. \cite{du-li-shen}
+
+\subsection{Tanh NMF}
+Tanh NMF is a relatively new NMF algorithm which tries to build a robust NMF by utilising the property of the hyperbolic tangent function. \cite{shen-zhang-lan-liao-luo} To use the tanh function for NMF purpose, Shen has parameterised the tanh function:
+
+\begin{equation}
+\tanh\left(ax^2\right) = \frac{e^{ax^2} - e^{-ax^2}}{e^{ax^2} + e^{-ax^2}}
+\end{equation}
+
+Hence the similarity function can be written as:
+
+\begin{equation}
+\sum_{ij}\tanh\left(aE_{ij}^2\right)
+\end{equation}
+
+where
+
+\begin{equation}
+E_{ij} = V_{ij} - \sum_r^k W_{ir}H_{rj}
+\end{equation}
+
+Then by using the HQ algorithm:
+
+\begin{equation}
+\sum_{ij}\left[U_{ij}E_{ij}^2 + \Psi\left(U_{ij}\right)\right]
+\end{equation}
+
+where $U_{ij}$ is the auxiliary matrix, and $\Psi\left(U_{ij}\right)$ is the conjugate function of the loss function. It is worth noting that when $E$ (the error term) is fixed, $U$ can be proved to be the following through convex property and Fenchel-Moreau theorem \cite{shen-zhang-lan-liao-luo}:
+
+\begin{equation}
+U_{ij} = a\left[1 - \tanh^2\left(a\left|E_{ij}\right|\right)\right]
+\end{equation}
+
+This algorithm is a robust and novel method to perform NMF; however, the accuracy still needs improvement as we will show in later sections.
+
 \section{Methods}
 \subsection{Pre-processing}
 We apply the following preprocessing to the images:
@@ -95,10 +162,41 @@ We apply the following preprocessing to the images:
 \item After applying noise, the image data is clipped to the range $\left[10^{-7},1\right]$ to avoid division by zero in the multiplicative updates as well as ignoring impossible values (darker than pitch black, brighter than maximum brightness)
 \end{enumerate}
 
-\subsection{Algorithms and objective function}
-All the NMF algorithm used and its objective functions are shown in the table above. All algorithms use the multiplicative update rule to iteratively compute W and H. The following shows an abstract overview of each algorithm:
+\subsection{Algorithms and objective functions}
+\begin{table}
+\begin{tabular}{|c|c|}\hline
+\textbf{Algorithm} & \textbf{Objective function}\\\hline\hline
+NMF & $\left\|V - WH\right\|^2_F$ \\\hline
+KL-NMF & $\sum_{ij} V_{ij}\log\left(\frac{V_{ij}}{\left(WH\right)_{ij}}\right) - V_{ij} + \left(WH\right)_{ij}$ \\\hline
+$L_1$-NMF & $\left\|V - WH\right\|_1$ \\\hline
+$L_{2,1}$-NMF & $\left\|V - WH\right\|_{2,1}$ \\\hline
+CIM-NMF & $\sum_{i=1}^{m}\sum_{j=1}^{n} 1 - \frac{1}{\sqrt{2\pi}\sigma}e^\frac{-\left(V - WH\right)_{ij}^2}{2\sigma^2}$ \\\hline
+tanh-NMF & $\sum_{ij}\tanh\left(aE_{ij}^2\right)$ where $E_{ij} = V_{ij} - \sum_r^k W_{ir}H_{rj}$ \\\hline
+\end{tabular}
+\caption{Algorithms and objective functions \label{tab:objfunc}}
+\end{table}
 
-Each algorithm is applied to both datasets and the evaluation metrics are recorded.
+\begin{algorithm}
+\begin{algorithmic}
+\REQUIRE $V \in \mathbb{R}^{m \times n}, k \in \mathbb{Z}^+, \beta,\lambda_1,\lambda_2 \in \mathbb{R},w \in \left(\mathbb{R}^{m \times n}, \mathbb{R}^{m \times k}, \mathbb{R}^{k \times n}\right) \to \mathbb{R}^{m \times n}$
+\ENSURE $W \in \mathbb{R}^{m \times k}, H \in \mathbb{R}^{k \times n}$
+\STATE $W,H \gets U\left(0,1\right),U\left(0,1\right)$
+\REPEAT
+  \STATE $U \gets w\left(X,W,H\right)$
+  \STATE $W \gets W \otimes \frac{\left[U \otimes V \otimes \left(WH\right)^{\beta-2}\right] H^T}{\left[U \otimes \left(WH\right)^{\beta-1}\right]H^T + \lambda_1 + \lambda_2 W}$
+  \STATE $H \gets H \otimes \frac{W^T \left[U \otimes V \otimes \left(WH\right)^{\beta-2}\right]}{W^T \left[U \otimes \left(WH\right)^{\beta-1}\right] + \lambda_1 + \lambda_2 H}$
+\UNTIL{$\textup{converged}$}
+\end{algorithmic}
+\caption{Weighted NMF with $\beta$-divergence \label{alg:b-wnmf}}
+\end{algorithm}
+
+All the NMF algorithm used and its objective functions are shown in table \ref{tab:objfunc}. All algorithms use the weighted multiplicative update rule to compute $W$ and $H$. Therefore iteratively, all algorithms can be implemented by adjusting weight according to its loss function. \cite{arora} Algorithm \ref{alg:b-wnmf} illustrates the generic procedure used by all of the NMF variants tested in this experiment.
+
+Please note $\beta$, $\lambda_1$, $\lambda_2$ allows a broader range of extensions to the algorithm (different objective functions, different regularization) and combinations thereof than have been explored in this experiment.
+
+Before experimenting, the objective function shows that theoretically CIM and Tanh NMFs are more robust than other methods, as both Gaussian kernel and tanh function are not sensitive to outliers. It is due to comparing gaussian and tanh to a linear or quadratic function. Extreme values hava a relatively lesser impact when using gaussian or tanh function to update the Weight matrix. 
+
+Each algorithm is applied to both datasets, and an evaluation metrics are recorded.
 
 \subsection{Introduced noises}
 Noises are introduced into the data, and algorithms are evaluated again on the noisy data. The result of noisy data will be compared vertically and horizontally. It will allow us to understand the robustness of the algorithm.
@@ -113,7 +211,7 @@ Noises are introduced into the data, and algorithms are evaluated again on the n
 \caption{CroppedYaleB salt and pepper noise, $\sigma=0.4$ \label{fig:CroppedYaleB-salt_and_pepper-3}}
 \end{figure}
 
-During an analog-to-digital conversion, an image may obtain some dark pixels in bright regions and bright pixels in dark regions. \cite{salt-and-pepper} Although modern techniques can effectively eliminate this noise, the salt and pepper noise was added to further examine the robustness of the algorithms. The noise was applied like so:
+During an analog-to-digital conversion, an image may obtain some dark pixels in bright regions and bright pixels in dark regions. \cite{noise} Although modern techniques can effectively eliminate this noise, the salt and pepper noise was added to further examine the robustness of the algorithms. The noise was applied like so:
 
 \begin{equation}
 V = \hat{V} + 1\left\{P \land R\right\} - 1\left\{P \land \lnot R\right\}
@@ -131,7 +229,7 @@ where $V$ is the noisy image, $\hat{V}$ is the original image, $P \equiv z_1 \le
 \caption{CroppedYaleB laplace noise, $\sigma=0.4$ \label{fig:CroppedYaleB-laplace-3}}
 \end{figure}
 
-Laplace noise refers to the noise in the statistical model used, as well as the noise during the processing of signals, for example, when taking a photo using a digital sensor, the sensor would have inherent noises due to its temperature, level of illumination and electrical wiring. Therefore, a perfect image with no noise is most impossible to obtain in practice, so when processing an image signal using NMF, we need to account for the noises. It is also worth to mention that noises are mostly random in nature. In principle the $L_1$-NMF should handle this type of noise well because the $L_1$ norm assumes a Laplace distribution. The noise was applied like so:
+Laplace noise refers to the noise in the statistical model used, as well as the noise during the processing of signals, for example, when taking a photo using a digital sensor, the sensor would have inherent noises due to its temperature, level of illumination and electrical wiring. Therefore, a perfect image with no noise is most impossible to obtain in practice, so when processing an image signal using NMF, we need to account for the noises. It is also worth to mention that noises are mostly random in nature. In principle the $L_1$-NMF should handle this type of noise well because the $L_1$ norm assumes a Laplace distribution. \cite{yang-zhang-yang-zhang} The noise was applied like so:
 
 \begin{equation}
 V = \hat{V} + Z
@@ -149,7 +247,7 @@ where $V$ is the noisy image, $\hat{V}$ is the original image, $Z \sim \textup{L
 \caption{CroppedYaleB uniform noise, $\sigma=0.4$ \label{fig:CroppedYaleB-uniform-3}}
 \end{figure}
 
-Being digital, the pixels of a given image can sometimes be quantized to a number of discrete levels, for example if the original image had a low resolution. This is known as quantization noise \cite{uniform} We approximate this effect by adding uniform noise to the original image. The noise was applied like so:
+Being digital, the pixels of a given image can sometimes be quantized to a number of discrete levels, for example if the original image had a low resolution. This is known as quantization noise \cite{noise} We approximate this effect by adding uniform noise to the original image. The noise was applied like so:
 
 \begin{equation}
 V = \hat{V} + Z
@@ -248,27 +346,14 @@ where $I\left(\cdot,\cdot\right)$ is mutual information and $H\left(\cdot\right)
 
 
 \subsection{Discussion}
-From the result we can clearly observe that NMF, KL-NMF, $L_1$-NMF, and $L_{2,1}$-NMF have similar performance, where the impact of noises on accuracy, NMI and RRE are very alike. These algorithms all capable of generating good results without noise, however, they are very sensitive to contaminated data, as the result show their accuracy decreases significantly when exposed to noise. Overall, based on the results, these algorithms are not as robust as the other algorithm, such as CIN-NMF or tanh-NMF, i.e. the robust algorithm are not sensitive to noise and performed relatively well even with noise introduced.
+From the result, we can observe that NMF, KL-NMF, $L_1$-NMF, and $L_{2,1}$-NMF have similar results, where the impact of noise on the accuracy, NMI and RRE are very much alike. These algorithms are all capable of generating good results without noise; however, they are susceptible to contaminated data because the result has shown that their accuracy decreases significantly when exposed to noise. The result matches the prediction made based on the mathematical property of the objective functions, cim-NMF or tanh-NMF are more robust than the other algorithms. Cim-NMF or tanh-NMF are less sensitive to noise, and they performed relatively well even with noise introduced.
 
-However, there is a trade-off between robustness and accuracy. Although the robust algorithms are relatively insensitive to noises, a lower level of accuracy is shown in comparison to the other algorithms.
+However, there is a trade-off between robustness and accuracy. Although the robust algorithms are relatively insensitive to noise, a lower level of accuracy is shown in comparison to the other algorithms. 
 
 \section{Conclusion}
-In this report, we have compared several different NMF algorithms. The best performing algorithm, on a clean dataset is the KL-NMF, the most robust algorithm being tanh-NMF. Through comparison, there is an apparent trade-off between robustness and accuracy, the future research of NMF algorithm can focus on improving the accuracy while retain the robust property of the algorithm.
+In this report, we have compared several different NMF algorithms. The best performing algorithm, on a clean dataset is the KL-NMF, the most robust algorithm being CIM-NMF. Based on the results, there is an apparent trade-off between robustness and accuracy. Perhaps the future research of NMF algorithm can focus on improving the accuracy while retaining the robust property of the algorithm.
 
-
-\begin{thebibliography}{99}
-\bibitem{source1} source1
-\bibitem{source2} source2
-\bibitem{source3} source3
-\bibitem{source4} source4
-\bibitem{source5} source5
-\bibitem{source6} source6
-\bibitem{uniform} Boncelet, Charles (2005). "Image Noise Models". In Alan C. Bovik (ed.). \textit{Handbook of Image and Video Processing}. Academic Press. ISBN 0-12-119792-1.
-\bibitem{gaussian} Philippe Cattin (2012-04-24). "Image Restoration: Introduction to Signal and Image Processing". MIAC, University of Basel. Retrieved 11 October 2013.
-\bibitem{salt-and-pepper} Alan C. Bovik (2005). \textit{Handbook of Image and Video Processing}. Academic Press. ISBN 0-12-119792-1.
-\end{thebibliography}
-
-\appendix
+\printbibliography\appendix
 
 \section{Running the code}
 \begin{itemize}

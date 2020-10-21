@@ -6,7 +6,7 @@ zehu4485_ngra5777.zip: algorithm.py report/report.pdf
 	cd zehu4485_ngra5777 && zip -r ../$@ *
 	rm -r zehu4485_ngra5777
 
-report/report.pdf: report/report.tex report/report.sty
+report/report.pdf: report/report.tex report/report.sty report/references.bib
 	cd report && pdflatex report.tex
 
 clean:
